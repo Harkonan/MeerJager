@@ -16,23 +16,30 @@ namespace MeerJager.Entities
             while (player.Health > 0 || enemy.Health > 0)
             {
                 CombatRound(enemy);
-                GetPlayerChoice();
+                GetPlayerChoice(enemy);
             }
         }
 
-        private static void GetPlayerChoice()
+        private static void GetPlayerChoice(Enemy enemy)
         {
             var menuOptions = new List<MenuOption>();
             var closeDistance = new MenuOption()
             {
                 Display = "Close Distance",
-                Id = 1
+                Id = 1,
             };
+
             var openDistance = new MenuOption()
             {
                 Display = "Open Distance",
-                Id = 2
+                Id = 2,
             };
+            var raiseDepth = new MenuOption()
+            {
+                Display = "Raise Depth",
+                Id = 2,
+            };
+
             menuOptions.Add(closeDistance);
             menuOptions.Add(openDistance);
 
@@ -48,34 +55,48 @@ namespace MeerJager.Entities
             if (char.IsDigit(key) && menuOptions.Any(x => x.Id.ToString() == key.ToString()))
             {
                 var selected = menuOptions.Where(x => x.Id.ToString() == key.ToString()).FirstOrDefault();
+                
                 Console.WriteLine();
-                Console.WriteLine(selected.Display);
+                switch (selected.Id)
+                {
+                    case 1:
+                        enemy.ChangeDistance(-100);
+                        break;
+                    case 2:
+                        enemy.ChangeDistance(100);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
 
 
         public static void CombatRound(Enemy enemy)
-        {   
+        {
+
+            Console.WriteLine("Round Start");
             if (!enemy.isEngaged)
             {  
                 // if the distance between ships is > 100 auto detect
                 if (enemy.DistanceToPlayer < 100)
                 {
-                    enemy.isEngaged = true;
+                    enemy.Engage();
                 }
                 else
                 {
-                    int depthModifier = (int)player.Depth / 100; //Gets the depth modifier as a decimal percent
-                    double playerProfileAfterDepth = player.Profile * depthModifier;
+                    double playerProfileAfterDepth = player.Profile * player.Depth.ProfileMultiplier;
                     double baseDetectionChancePerHundredMeters = enemy.DetectionAbility * playerProfileAfterDepth; //players depth profile modified by the enemy detection ability
                     double hundredMetersToPlayer = enemy.DistanceToPlayer / 100;
                     double finalDetectionChance = baseDetectionChancePerHundredMeters * Math.Floor(hundredMetersToPlayer);
                     int roll = Dice.RollPercentage();
-                    if (finalDetectionChance < roll)
-                    {
-                        enemy.isEngaged = true;
-                        Console.WriteLine("The Enemy has detected you");
+
+                    Console.WriteLine("DetectionChance: " + finalDetectionChance);
+                    Console.WriteLine("Roll: "+roll);
+                    if (finalDetectionChance > roll)
+                    {   
+                        enemy.Engage();
                     }
                     else
                     {
@@ -84,9 +105,12 @@ namespace MeerJager.Entities
 
                 }
 
+                
+
 
 
             }
+            Console.WriteLine("Round End");
 
         }
     }

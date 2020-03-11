@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\CombatMenu.cs" />
+    <Compile Include="Entities\Depths.cs" />
     <Compile Include="Entities\Dice.cs" />
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\MenuOption.cs" />

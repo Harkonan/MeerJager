@@ -10,5 +10,6 @@ namespace MeerJager.Entities
     {
         public int Id { get; set; }
         public string Display { get; set; }
+        public Action<int> Action { get; set; }
     }
 }

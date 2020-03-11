@@ -19,13 +19,13 @@ namespace MeerJager.Entities
         public Boolean isEngaged { get; set; }
         public Boolean playerCanSee { get; set; }
         public int DistanceToPlayer { get; set; } //in meters
-        public int DetectionAbility { get; set; } // 0 to 1 what percentage of the profile does the detection calculation use
+        public double DetectionAbility { get; set; } // 0 to 1 what percentage of the profile does the detection calculation use
 
 
         public Enemy()
         {
             Health = 100;
-            Profile = 10;
+            Profile = 50;
             isEngaged = false;
             playerCanSee = false;
             DistanceToPlayer = 2000;
@@ -39,7 +39,26 @@ namespace MeerJager.Entities
             };
             Armament = new Weapon[1];
             Armament[0] = Gun;
+        }
 
+        public void ChangeDistance(int change)
+        {
+            if (DistanceToPlayer + change > 0)
+            {
+                DistanceToPlayer += change;
+            }
+            else
+            {
+                DistanceToPlayer = 0;
+            }
+
+            Console.WriteLine("Enemy distance changed to {0}m", DistanceToPlayer);
+        }
+
+        public void Engage()
+        {
+            isEngaged = true;
+            Console.WriteLine("Enemy has Spotted you and begun to engage");
         }
     }
 }

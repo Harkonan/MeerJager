@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jaeger.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,10 +17,7 @@ namespace MeerJager.Entities
         public int Supplies { get; set; }
         public int Profile { get; set; } //profile is the size of the ships profile
         public int PoliticalCapital { get; set; }
-        public Depths Depth { get; set; }
-
-        public enum Depths : int { surface = 100, periscope = 60, evasion = 20, deep = 0 };
-
+        public Depth Depth { get; set; }
 
         public static Player GetPlayer
         {
@@ -38,6 +36,7 @@ namespace MeerJager.Entities
         {
             Health = 100;
             Profile = 10;
+            Depth = Depths.GetDepths[2];
             Armament = new Weapon[5];
             for (int i = 0; i < 4; i++)
             {
@@ -64,4 +63,6 @@ namespace MeerJager.Entities
         }
 
     }
+
+    
 }
