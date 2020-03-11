@@ -78,40 +78,50 @@ namespace MeerJager.Entities
 
             Console.WriteLine("Round Start");
             if (!enemy.isEngaged)
-            {  
-                // if the distance between ships is > 100 auto detect
-                if (enemy.DistanceToPlayer < 100)
+            {
+                EnemySearching(enemy); 
+            }
+            if (!enemy.playerCanSee)
+            {
+                PlayerSearching(enemy);
+            }
+
+            Console.WriteLine("Round End");
+
+        }
+
+        private static void PlayerSearching(Enemy enemy)
+        {
+            //TODO: For Daryl
+        }
+
+        public static void EnemySearching(Enemy enemy)
+        {
+            // if the distance between ships is > 100 auto detect
+            if (enemy.DistanceToPlayer < 100)
+            {
+                enemy.Engage();
+            }
+            else
+            {
+                double playerProfileAfterDepth = player.Profile * player.Depth.ProfileMultiplier;
+                double baseDetectionChancePerHundredMeters = enemy.DetectionAbility * playerProfileAfterDepth; //players depth profile modified by the enemy detection ability
+                double hundredMetersToPlayer = enemy.DistanceToPlayer / 100;
+                double finalDetectionChance = baseDetectionChancePerHundredMeters * Math.Floor(hundredMetersToPlayer);
+                int roll = Dice.RollPercentage();
+
+                Console.WriteLine("DetectionChance: " + finalDetectionChance);
+                Console.WriteLine("Roll: " + roll);
+                if (finalDetectionChance > roll)
                 {
                     enemy.Engage();
                 }
                 else
                 {
-                    double playerProfileAfterDepth = player.Profile * player.Depth.ProfileMultiplier;
-                    double baseDetectionChancePerHundredMeters = enemy.DetectionAbility * playerProfileAfterDepth; //players depth profile modified by the enemy detection ability
-                    double hundredMetersToPlayer = enemy.DistanceToPlayer / 100;
-                    double finalDetectionChance = baseDetectionChancePerHundredMeters * Math.Floor(hundredMetersToPlayer);
-                    int roll = Dice.RollPercentage();
-
-                    Console.WriteLine("DetectionChance: " + finalDetectionChance);
-                    Console.WriteLine("Roll: "+roll);
-                    if (finalDetectionChance > roll)
-                    {   
-                        enemy.Engage();
-                    }
-                    else
-                    {
-                        Console.WriteLine("The Enemy fails to detect you");
-                    }
-
+                    Console.WriteLine("The Enemy fails to detect you");
                 }
 
-                
-
-
-
             }
-            Console.WriteLine("Round End");
-
         }
     }
 }
