@@ -114,27 +114,27 @@ namespace MeerJager.Entities
                     Console.WriteLine("They are aware of our presence and are moving to engage");
                 }
             }
-            Console.WriteLine("We have {0} torpedos in the stores with {1} loaded into tubes", player.Torpedos, 0);
+            Console.WriteLine("We have {0} torpedos in the stores with {1} loaded into tubes", player.Torpedos, player.Armament.Where(x => x.Type == WeaponType.Torpedo && x.Loaded == true).Count());
             Console.WriteLine("Currently we are at {0} depth", player.Depth.DepthName);
-            if (0 < player.Health && player.Health >= 20)
+            if (0 < player.Health && player.Health <= 20)
             {
                 Console.WriteLine("Our hull is critically compormised");
             }
-            else if (20 < player.Health && player.Health >= 60)
+            else if (20 < player.Health && player.Health <= 60)
             {
                 Console.WriteLine("Our hull is heavily damaged");
             }
-            else if (20 < player.Health && player.Health >= 60)
+            else if (20 < player.Health && player.Health <= 60)
             {
                 Console.WriteLine("Our hull is damaged");
             }
-            else if (60 < player.Health && player.Health >= 99)
+            else if (60 < player.Health && player.Health <= 99)
             {
                 Console.WriteLine("Our hull is slightly damaged");
             }
             else
             {
-                Console.WriteLine("Our hull untouched");
+                Console.WriteLine("Our hull is untouched");
             }
 
             GetPlayerChoice(enemy);

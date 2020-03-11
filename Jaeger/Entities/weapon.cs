@@ -11,6 +11,7 @@ namespace MeerJager.Entities
         public int Damage { get; set; }
         public int ReloadTime { get; set; }
         public int HitPercent { get; set; }
+        public Boolean Loaded { get; set; }
 
         public WeaponType Type { get; set; }
     }

@@ -46,7 +46,8 @@ namespace MeerJager.Entities
                     Damage = 55,
                     Type = WeaponType.Torpedo,
                     ReloadTime = 120,
-                    HitPercent = 30
+                    HitPercent = 30,
+                    Loaded = true
                 };
                 Armament[i] = weapon;
             }
