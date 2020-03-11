@@ -93,6 +93,7 @@ namespace MeerJager.Entities
         private static void PlayerSearching(Enemy enemy)
         {
             //TODO: For Daryl
+            enemy.Spotted();
         }
 
         public static void EnemySearching(Enemy enemy)

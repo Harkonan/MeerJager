@@ -60,5 +60,11 @@ namespace MeerJager.Entities
             isEngaged = true;
             Console.WriteLine("Enemy has Spotted you and begun to engage");
         }
+
+        public void Spotted()
+        {
+            playerCanSee = true;
+            Console.WriteLine("Enemy Spotted!");
+        }
     }
 }
