@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jaeger.Entities;
 using MeerJager.Entities;
 
 namespace MeerJager.Entities
@@ -28,25 +29,38 @@ namespace MeerJager.Entities
                 Display = "Close Distance",
                 Id = 1,
             };
-
+            menuOptions.Add(closeDistance);
             var openDistance = new MenuOption()
             {
                 Display = "Open Distance",
                 Id = 2,
             };
-            var raiseDepth = new MenuOption()
-            {
-                Display = "Raise Depth",
-                Id = 2,
-            };
-
-            menuOptions.Add(closeDistance);
             menuOptions.Add(openDistance);
+            var depths = Depths.GetDepths;
+            if (depths.Any(x => x.DepthOrder == player.Depth.DepthOrder+1))
+            {
+                var raiseDepth = new MenuOption()
+                {
+                    Display = "Raise Depth to "+ depths.Where(x => x.DepthOrder == player.Depth.DepthOrder + 1).FirstOrDefault().DepthName,
+                    Id = 3,
+                };
+                menuOptions.Add(raiseDepth);
+            }
+
+            if (depths.Any(x => x.DepthOrder == player.Depth.DepthOrder - 1))
+            {
+                var lowerDepth = new MenuOption()
+                {
+                    Display = "Lower Depth to " + depths.Where(x => x.DepthOrder == player.Depth.DepthOrder - 1).FirstOrDefault().DepthName,
+                    Id = 4,
+                };
+                menuOptions.Add(lowerDepth);
+            }
 
             Console.WriteLine("");
             Console.WriteLine("");
             Console.WriteLine("Combat Options:");
-            foreach (var option in menuOptions)
+            foreach (var option in menuOptions.OrderBy(x => x.Id))
             {
                 Console.WriteLine("{0}. {1}", option.Id, option.Display);
             }
@@ -64,6 +78,12 @@ namespace MeerJager.Entities
                         break;
                     case 2:
                         enemy.ChangeDistance(100);
+                        break;
+                    case 3:
+                        player.RaiseDepth();
+                        break;
+                    case 4:
+                        player.LowerDepth();
                         break;
                     default:
                         break;

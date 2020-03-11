@@ -18,6 +18,7 @@ namespace MeerJager.Entities
         public int Profile { get; set; } //profile is the size of the ships profile
         public int PoliticalCapital { get; set; }
         public Depth Depth { get; set; }
+        
 
         public static Player GetPlayer
         {
@@ -60,6 +61,24 @@ namespace MeerJager.Entities
             Supplies = 200;
             PoliticalCapital = 10;
             Torpedos = 22;
+        }
+
+        public void RaiseDepth()
+        {
+            var depths = Depths.GetDepths;
+            if (depths.Any(x => x.DepthOrder == Depth.DepthOrder + 1))
+            {
+                Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder + 1).FirstOrDefault();                
+            }
+        }
+
+        public void LowerDepth()
+        {
+            var depths = Depths.GetDepths;
+            if (depths.Any(x => x.DepthOrder == Depth.DepthOrder - 1))
+            {
+                Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder - 1).FirstOrDefault();
+            }
         }
 
     }
