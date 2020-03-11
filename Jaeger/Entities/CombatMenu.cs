@@ -57,6 +57,13 @@ namespace MeerJager.Entities
                 menuOptions.Add(lowerDepth);
             }
 
+            var sitRep = new MenuOption()
+            {
+                Display = "Situation Report",
+                Id = 5,
+            };
+            menuOptions.Add(sitRep);
+
             Console.WriteLine("");
             Console.WriteLine("");
             Console.WriteLine("Combat Options:");
@@ -85,6 +92,9 @@ namespace MeerJager.Entities
                     case 4:
                         player.LowerDepth();
                         break;
+                    case 5:
+                        
+                        break;
                     default:
                         break;
                 }
@@ -97,6 +107,7 @@ namespace MeerJager.Entities
         {
 
             Console.WriteLine("Round Start");
+            
             if (!enemy.isEngaged)
             {
                 EnemySearching(enemy); 
@@ -105,7 +116,7 @@ namespace MeerJager.Entities
             {
                 PlayerSearching(enemy);
             }
-
+            Console.WriteLine();
             Console.WriteLine("Round End");
 
         }
