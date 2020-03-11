@@ -68,7 +68,8 @@ namespace MeerJager.Entities
             var depths = Depths.GetDepths;
             if (depths.Any(x => x.DepthOrder == Depth.DepthOrder + 1))
             {
-                Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder + 1).FirstOrDefault();                
+                Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder + 1).FirstOrDefault();
+                Console.WriteLine("Depth set to {0} aye", Depth.DepthName);
             }
         }
 
@@ -78,6 +79,7 @@ namespace MeerJager.Entities
             if (depths.Any(x => x.DepthOrder == Depth.DepthOrder - 1))
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder - 1).FirstOrDefault();
+                Console.WriteLine("Depth set to {0} aye", Depth.DepthName);
             }
         }
 

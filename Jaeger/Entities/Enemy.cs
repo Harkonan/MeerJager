@@ -52,19 +52,22 @@ namespace MeerJager.Entities
                 DistanceToPlayer = 0;
             }
 
-            Console.WriteLine("Enemy distance changed to {0}m", DistanceToPlayer);
+            Console.WriteLine("Captain, enemy is now at {0}km", DistanceToPlayer);
         }
 
         public void Engage()
         {
             isEngaged = true;
-            Console.WriteLine("Enemy has Spotted you and begun to engage");
+            Console.WriteLine("Captain, Enemy is moving to engage!");
         }
 
         public void Spotted()
         {
-            playerCanSee = true;
-            Console.WriteLine("Enemy Spotted!");
+            if (!playerCanSee)
+            {
+                playerCanSee = true;
+                Console.WriteLine("Enemy Spotted!");
+            }
         }
     }
 }

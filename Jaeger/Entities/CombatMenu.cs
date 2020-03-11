@@ -66,7 +66,7 @@ namespace MeerJager.Entities
 
             Console.WriteLine("");
             Console.WriteLine("");
-            Console.WriteLine("Combat Options:");
+            Console.WriteLine("What are your orders?");
             foreach (var option in menuOptions.OrderBy(x => x.Id))
             {
                 Console.WriteLine("{0}. {1}", option.Id, option.Display);
@@ -137,25 +137,19 @@ namespace MeerJager.Entities
                 Console.WriteLine("Our hull untouched");
             }
 
-            Console.WriteLine("What are your orders?");
             GetPlayerChoice(enemy);
         }
 
         public static void CombatRound(Enemy enemy)
         {
-
-            Console.WriteLine("Round Start");
-            Console.WriteLine();
-            if (!enemy.isEngaged)
-            {
-                EnemySearching(enemy); 
-            }
             if (!enemy.playerCanSee)
             {
                 PlayerSearching(enemy);
             }
-            Console.WriteLine();
-            Console.WriteLine("Round End");
+            if (!enemy.isEngaged)
+            {
+                EnemySearching(enemy); 
+            }
 
         }
 
@@ -181,13 +175,9 @@ namespace MeerJager.Entities
                 int roll = Dice.RollPercentage();
                 if (finalDetectionChance > roll)
                 {
+                    enemy.Spotted();
                     enemy.Engage();
                 }
-                else
-                {
-                    Console.WriteLine("The Enemy fails to detect you");
-                }
-
             }
         }
     }
