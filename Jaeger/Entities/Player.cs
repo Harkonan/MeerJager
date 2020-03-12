@@ -70,7 +70,7 @@ namespace MeerJager.Entities
             if (depths.Any(x => x.DepthOrder == Depth.DepthOrder + 1))
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder + 1).FirstOrDefault();
-                Console.WriteLine("Depth set to {0} aye", Depth.DepthName);
+                UIScreen.DisplayLines.Add(String.Format("Depth set to {0} aye", Depth.DepthName));
             }
         }
 
@@ -80,7 +80,7 @@ namespace MeerJager.Entities
             if (depths.Any(x => x.DepthOrder == Depth.DepthOrder - 1))
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder - 1).FirstOrDefault();
-                Console.WriteLine("Depth set to {0} aye", Depth.DepthName);
+                UIScreen.DisplayLines.Add(String.Format("Depth set to {0} aye", Depth.DepthName));
             }
         }
 
@@ -121,8 +121,8 @@ namespace MeerJager.Entities
         {
             if (amount > 0)
             {
-                Console.WriteLine("Hit!");
-                Console.WriteLine(GetDamageReport());
+                UIScreen.DisplayLines.Add("Hit!");
+                UIScreen.DisplayLines.Add(GetDamageReport());
 
                 if (Health - amount <= 0)
                 {
@@ -135,7 +135,7 @@ namespace MeerJager.Entities
             }
             else
             {
-                Console.WriteLine("They missed!");
+                UIScreen.DisplayLines.Add("They missed!");
             }
         }
 

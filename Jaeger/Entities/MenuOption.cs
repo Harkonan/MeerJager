@@ -12,6 +12,7 @@ namespace MeerJager.Entities
         public char Key { get; set; }
         public int MyProperty { get; set; }
         public string Display { get; set; }
-        public Action<int> Action { get; set; }
+        public Action Action { get; set; }
+
     }
 }

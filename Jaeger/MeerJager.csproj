@@ -49,6 +49,7 @@
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\MenuOption.cs" />
     <Compile Include="Entities\Player.cs" />
+    <Compile Include="Entities\UI.cs" />
     <Compile Include="Entities\Weapon.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

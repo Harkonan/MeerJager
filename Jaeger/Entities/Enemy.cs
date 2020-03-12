@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jaeger.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,16 @@ namespace MeerJager.Entities
             Armament[0] = Gun;
         }
 
+        public void PlayerCloseDistance()
+        {
+            ChangeDistance(-100);
+        }
+
+        public void PlayerOpenDistance()
+        {
+            ChangeDistance(100);
+        }
+
         public void ChangeDistance(int change)
         {
             if (DistanceToPlayer + change > 0)
@@ -52,13 +63,14 @@ namespace MeerJager.Entities
                 DistanceToPlayer = 0;
             }
 
-            Console.WriteLine("Captain, enemy is now at {0}km", DistanceToPlayer);
+
+            UIScreen.DisplayLines.Add(string.Format("Captain, enemy is now at {0}km", DistanceToPlayer));
         }
 
         public void Engage()
         {
             isEngaged = true;
-            Console.WriteLine("Captain, Enemy is moving to engage!");
+            UIScreen.DisplayLines.Add("Captain, Enemy is moving to engage!");
         }
 
         public void Spotted()
@@ -66,7 +78,7 @@ namespace MeerJager.Entities
             if (!playerCanSee)
             {
                 playerCanSee = true;
-                Console.WriteLine("Enemy Spotted!");
+                UIScreen.DisplayLines.Add("Enemy Spotted!");
             }
         }
 

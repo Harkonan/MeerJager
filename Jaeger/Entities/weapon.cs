@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Jaeger.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,11 +21,8 @@ namespace MeerJager.Entities
         {
             Loaded = false;
             ReloadRoundsLeft = ReloadRounds;
-            Console.WriteLine("Profile: "+_targetProfile);
 
             int Roll = Dice.RollPercentage();
-            Console.WriteLine("Roll: "+Roll);
-            Console.WriteLine("Enemy has Fired!");
             
             if (Roll > _targetProfile)
             {

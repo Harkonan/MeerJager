@@ -11,17 +11,20 @@ namespace MeerJager.Entities
     static class CombatMenu
     {
         private static Player player = Player.GetPlayer;
+        private static Enemy enemy;
 
-        public static void StartCombat(Enemy enemy)
+        public static void StartCombat(Enemy _enemy)
         {
-            while (player.Health > 0 && enemy.Health > 0)
+            enemy = _enemy;
+            while (player.Health > 0 && _enemy.Health > 0)
             {
-                CombatRound(enemy);
-                GetPlayerChoice(enemy);
+                CombatRound();
+                GetPlayerChoice();
+                UIScreen.RenderScreen();
             }
         }
 
-        private static void GetPlayerChoice(Enemy enemy)
+        private static void GetPlayerChoice()
         {
             int OptionNumber = 1;
             var menuOptions = new List<MenuOption>();
@@ -30,6 +33,7 @@ namespace MeerJager.Entities
                 Display = "Close Distance",
                 Key = 'C',
                 Id = OptionNumber,
+                Action = enemy.PlayerCloseDistance
             };
             OptionNumber++;
             menuOptions.Add(closeDistance);
@@ -38,6 +42,7 @@ namespace MeerJager.Entities
                 Display = "Open Distance",
                 Key = 'O',
                 Id = OptionNumber,
+                Action = enemy.PlayerOpenDistance
             };
             OptionNumber++;
             menuOptions.Add(openDistance);
@@ -49,7 +54,8 @@ namespace MeerJager.Entities
                     Display = "Raise Depth to " + depths.Where(x => x.DepthOrder == player.Depth.DepthOrder + 1).FirstOrDefault().DepthName,
                     Key = 'R',
                     Id = OptionNumber,
-                };
+                    Action = player.RaiseDepth
+            };
                 OptionNumber++;
                 menuOptions.Add(raiseDepth);
             }
@@ -61,6 +67,7 @@ namespace MeerJager.Entities
                     Display = "Lower Depth to " + depths.Where(x => x.DepthOrder == player.Depth.DepthOrder - 1).FirstOrDefault().DepthName,
                     Key = 'L',
                     Id = OptionNumber,
+                    Action = player.LowerDepth
                 };
                 OptionNumber++;
                 menuOptions.Add(lowerDepth);
@@ -71,84 +78,48 @@ namespace MeerJager.Entities
                 Display = "Situation Report",
                 Key = 'S',
                 Id = OptionNumber,
+                Action = SituationReport
             };
             OptionNumber++;
             menuOptions.Add(sitRep);
 
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("What are your orders?");
-            foreach (var option in menuOptions.OrderBy(x => x.Id))
-            {
-                Console.WriteLine("{0}. {1} [{2}]", option.Id, option.Display, option.Key);
-            }
+            UIScreen.MenuTitle = "What are your orders Captain?";
+            UIScreen.Menu = menuOptions;
 
-            Boolean isValidKey = false;
-            do
-            {
-                Char key = Console.ReadKey().KeyChar;
-                if (menuOptions.Any(x => char.ToLower(x.Key) == char.ToLower(key)))
-                {
-                    isValidKey = true;
-                    Console.Clear();
-                    Console.WriteLine();
-                    switch (char.ToLower(key))
-                    {
-                        case 'c':
-                            enemy.ChangeDistance(-100);
-                            break;
-                        case 'o':
-                            enemy.ChangeDistance(100);
-                            break;
-                        case 'r':
-                            player.RaiseDepth();
-                            break;
-                        case 'l':
-                            player.LowerDepth();
-                            break;
-                        case 's':
-                            SituationReport(enemy);
-                            break;
-                        case 't':
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            } while (!isValidKey);
         }
 
 
-        public static void SituationReport(Enemy enemy)
+        public static void SituationReport()
         {
-            Console.Clear();
-            Console.WriteLine("XO's report:");
+            UIScreen.DisplayLines.Add("XO's report:");
+            
             if (enemy.playerCanSee)
             {
-                Console.WriteLine("Captain, we have one enemy at {0}km ahead", enemy.DistanceToPlayer / 100);
+
+                UIScreen.DisplayLines.Add(String.Format("Captain, we have one enemy at {0}km ahead", enemy.DistanceToPlayer / 100));
                 if (enemy.isEngaged)
                 {
-                    Console.WriteLine("They are aware of our presence and are moving to engage");
+                    UIScreen.DisplayLines.Add("They are aware of our presence and are moving to engage");
                 }
             }
-            Console.WriteLine("We have {0} torpedos in the stores with {1} loaded into tubes", player.Torpedos, player.Armament.Where(x => x.Type == WeaponType.Torpedo && x.Loaded == true).Count());
-            Console.WriteLine("Currently we are at {0} depth", player.Depth.DepthName);
-            Console.WriteLine(player.GetDamageReport());
+            UIScreen.DisplayLines.Add(String.Format("We have {0} torpedos in the stores with {1} loaded into tubes", player.Torpedos, player.Armament.Where(x => x.Type == WeaponType.Torpedo && x.Loaded == true).Count()));
+            UIScreen.DisplayLines.Add(String.Format("Currently we are at {0} depth", player.Depth.DepthName));
+            UIScreen.DisplayLines.Add(player.GetDamageReport());
 
-            GetPlayerChoice(enemy);
+            GetPlayerChoice();
         }
 
-        public static void CombatRound(Enemy enemy)
+        public static void CombatRound()
         {
             if (!enemy.playerCanSee)
             {
                 //TODO: Make it so enemy can loose site of you
-                PlayerSearching(enemy);
+                PlayerSearching();
             }
             if (!enemy.isEngaged)
             {
                 //TODO: make it so you can loose site of the enemy
-                EnemySearching(enemy);
+                EnemySearching();
             }
             else
             {
@@ -157,6 +128,7 @@ namespace MeerJager.Entities
                 {
                     double profile = player.GetProfile(enemy.DetectionAbility, enemy.DistanceToPlayer);
                     int damage = gun.FireWeapon(profile);
+                    UIScreen.DisplayLines.Add(String.Format("Enemy has fired!"));
                     player.SetDamage(damage);
                    
                 }
@@ -165,13 +137,13 @@ namespace MeerJager.Entities
             }
         }
 
-        private static void PlayerSearching(Enemy enemy)
+        private static void PlayerSearching()
         {
             //TODO: For Daryl
             enemy.Spotted();
         }
 
-        public static void EnemySearching(Enemy enemy)
+        public static void EnemySearching()
         {
             // if the distance between ships is > 100 auto detect
             if (enemy.DistanceToPlayer < 100)
