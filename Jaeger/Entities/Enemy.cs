@@ -32,9 +32,9 @@ namespace MeerJager.Entities
             DetectionAbility = 1;
             Weapon Gun = new Weapon()
             {
-                Damage =  20,
-                HitPercent = 20,
-                ReloadTime = 10,
+                Damage = 10,
+                ReloadRounds = 1,
+                Loaded = true,
                 Type = WeaponType.MainBattery
             };
             Armament = new Weapon[1];
@@ -67,6 +67,14 @@ namespace MeerJager.Entities
             {
                 playerCanSee = true;
                 Console.WriteLine("Enemy Spotted!");
+            }
+        }
+
+        public void ReloadGuns()
+        {
+            foreach (var gun in Armament)
+            {
+                gun.Reload();
             }
         }
     }

@@ -14,7 +14,7 @@ namespace MeerJager.Entities
 
         public static void StartCombat(Enemy enemy)
         {
-            while (player.Health > 0 || enemy.Health > 0)
+            while (player.Health > 0 && enemy.Health > 0)
             {
                 CombatRound(enemy);
                 GetPlayerChoice(enemy);
@@ -23,27 +23,34 @@ namespace MeerJager.Entities
 
         private static void GetPlayerChoice(Enemy enemy)
         {
+            int OptionNumber = 1;
             var menuOptions = new List<MenuOption>();
             var closeDistance = new MenuOption()
             {
                 Display = "Close Distance",
-                Id = 1,
+                Key = 'C',
+                Id = OptionNumber,
             };
+            OptionNumber++;
             menuOptions.Add(closeDistance);
             var openDistance = new MenuOption()
             {
                 Display = "Open Distance",
-                Id = 2,
+                Key = 'O',
+                Id = OptionNumber,
             };
+            OptionNumber++;
             menuOptions.Add(openDistance);
             var depths = Depths.GetDepths;
-            if (depths.Any(x => x.DepthOrder == player.Depth.DepthOrder+1))
+            if (depths.Any(x => x.DepthOrder == player.Depth.DepthOrder + 1))
             {
                 var raiseDepth = new MenuOption()
                 {
-                    Display = "Raise Depth to "+ depths.Where(x => x.DepthOrder == player.Depth.DepthOrder + 1).FirstOrDefault().DepthName,
-                    Id = 3,
+                    Display = "Raise Depth to " + depths.Where(x => x.DepthOrder == player.Depth.DepthOrder + 1).FirstOrDefault().DepthName,
+                    Key = 'R',
+                    Id = OptionNumber,
                 };
+                OptionNumber++;
                 menuOptions.Add(raiseDepth);
             }
 
@@ -52,16 +59,20 @@ namespace MeerJager.Entities
                 var lowerDepth = new MenuOption()
                 {
                     Display = "Lower Depth to " + depths.Where(x => x.DepthOrder == player.Depth.DepthOrder - 1).FirstOrDefault().DepthName,
-                    Id = 4,
+                    Key = 'L',
+                    Id = OptionNumber,
                 };
+                OptionNumber++;
                 menuOptions.Add(lowerDepth);
             }
 
             var sitRep = new MenuOption()
             {
                 Display = "Situation Report",
-                Id = 5,
+                Key = 'S',
+                Id = OptionNumber,
             };
+            OptionNumber++;
             menuOptions.Add(sitRep);
 
             Console.WriteLine("");
@@ -69,36 +80,42 @@ namespace MeerJager.Entities
             Console.WriteLine("What are your orders?");
             foreach (var option in menuOptions.OrderBy(x => x.Id))
             {
-                Console.WriteLine("{0}. {1}", option.Id, option.Display);
+                Console.WriteLine("{0}. {1} [{2}]", option.Id, option.Display, option.Key);
             }
-            var key = Console.ReadKey().KeyChar;
-            Console.Clear();
-            if (char.IsDigit(key) && menuOptions.Any(x => x.Id.ToString() == key.ToString()))
+
+            Boolean isValidKey = false;
+            do
             {
-                var selected = menuOptions.Where(x => x.Id.ToString() == key.ToString()).FirstOrDefault();
-                
-                Console.WriteLine();
-                switch (selected.Id)
+                Char key = Console.ReadKey().KeyChar;
+                if (menuOptions.Any(x => char.ToLower(x.Key) == char.ToLower(key)))
                 {
-                    case 1:
-                        enemy.ChangeDistance(-100);
-                        break;
-                    case 2:
-                        enemy.ChangeDistance(100);
-                        break;
-                    case 3:
-                        player.RaiseDepth();
-                        break;
-                    case 4:
-                        player.LowerDepth();
-                        break;
-                    case 5:
-                        SituationReport(enemy);
-                        break;
-                    default:
-                        break;
+                    isValidKey = true;
+                    Console.Clear();
+                    Console.WriteLine();
+                    switch (char.ToLower(key))
+                    {
+                        case 'c':
+                            enemy.ChangeDistance(-100);
+                            break;
+                        case 'o':
+                            enemy.ChangeDistance(100);
+                            break;
+                        case 'r':
+                            player.RaiseDepth();
+                            break;
+                        case 'l':
+                            player.LowerDepth();
+                            break;
+                        case 's':
+                            SituationReport(enemy);
+                            break;
+                        case 't':
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
+            } while (!isValidKey);
         }
 
 
@@ -108,7 +125,7 @@ namespace MeerJager.Entities
             Console.WriteLine("XO's report:");
             if (enemy.playerCanSee)
             {
-                Console.WriteLine("Captain, we have one enemy at {0}km ahead", enemy.DistanceToPlayer/100);
+                Console.WriteLine("Captain, we have one enemy at {0}km ahead", enemy.DistanceToPlayer / 100);
                 if (enemy.isEngaged)
                 {
                     Console.WriteLine("They are aware of our presence and are moving to engage");
@@ -116,26 +133,7 @@ namespace MeerJager.Entities
             }
             Console.WriteLine("We have {0} torpedos in the stores with {1} loaded into tubes", player.Torpedos, player.Armament.Where(x => x.Type == WeaponType.Torpedo && x.Loaded == true).Count());
             Console.WriteLine("Currently we are at {0} depth", player.Depth.DepthName);
-            if (0 < player.Health && player.Health <= 20)
-            {
-                Console.WriteLine("Our hull is critically compormised");
-            }
-            else if (20 < player.Health && player.Health <= 60)
-            {
-                Console.WriteLine("Our hull is heavily damaged");
-            }
-            else if (20 < player.Health && player.Health <= 60)
-            {
-                Console.WriteLine("Our hull is damaged");
-            }
-            else if (60 < player.Health && player.Health <= 99)
-            {
-                Console.WriteLine("Our hull is slightly damaged");
-            }
-            else
-            {
-                Console.WriteLine("Our hull is untouched");
-            }
+            Console.WriteLine(player.GetDamageReport());
 
             GetPlayerChoice(enemy);
         }
@@ -144,13 +142,27 @@ namespace MeerJager.Entities
         {
             if (!enemy.playerCanSee)
             {
+                //TODO: Make it so enemy can loose site of you
                 PlayerSearching(enemy);
             }
             if (!enemy.isEngaged)
             {
-                EnemySearching(enemy); 
+                //TODO: make it so you can loose site of the enemy
+                EnemySearching(enemy);
             }
+            else
+            {
+                var loadedGuns = enemy.Armament.Where(x => x.Loaded);
+                foreach (var gun in loadedGuns)
+                {
+                    double profile = player.GetProfile(enemy.DetectionAbility, enemy.DistanceToPlayer);
+                    int damage = gun.FireWeapon(profile);
+                    player.SetDamage(damage);
+                   
+                }
 
+                enemy.ReloadGuns();
+            }
         }
 
         private static void PlayerSearching(Enemy enemy)
@@ -168,12 +180,9 @@ namespace MeerJager.Entities
             }
             else
             {
-                double playerProfileAfterDepth = player.Profile * player.Depth.ProfileMultiplier;
-                double baseDetectionChancePerHundredMeters = enemy.DetectionAbility * playerProfileAfterDepth; //players depth profile modified by the enemy detection ability
-                double hundredMetersToPlayer = enemy.DistanceToPlayer / 100;
-                double finalDetectionChance = baseDetectionChancePerHundredMeters * Math.Floor(hundredMetersToPlayer);
+                double profile = player.GetProfile(enemy.DetectionAbility, enemy.DistanceToPlayer);
                 int roll = Dice.RollPercentage();
-                if (finalDetectionChance > roll)
+                if (profile > roll)
                 {
                     enemy.Spotted();
                     enemy.Engage();

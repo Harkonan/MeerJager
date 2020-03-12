@@ -45,7 +45,7 @@ namespace MeerJager.Entities
                 {
                     Damage = 55,
                     Type = WeaponType.Torpedo,
-                    ReloadTime = 120,
+                    ReloadRounds = 120,
                     HitPercent = 30,
                     Loaded = true
                 };
@@ -56,7 +56,7 @@ namespace MeerJager.Entities
                 Type = WeaponType.MainBattery,
                 Damage = 10,
                 HitPercent = 80,
-                ReloadTime = 5
+                ReloadRounds = 5
             };
             Armament[4] = BowGun;
             Supplies = 200;
@@ -81,6 +81,61 @@ namespace MeerJager.Entities
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder - 1).FirstOrDefault();
                 Console.WriteLine("Depth set to {0} aye", Depth.DepthName);
+            }
+        }
+
+        public double GetProfile(double _enemyDetectionAbility, int _enemyDistance)
+        {
+            double playerProfileAfterDepth = Profile * Depth.ProfileMultiplier;
+            double baseDetectionChancePerHundredMeters = _enemyDetectionAbility * playerProfileAfterDepth; //players depth profile modified by the enemy detection ability
+            double hundredMetersToPlayer = _enemyDistance / 100;
+            double finalDetectionChance = baseDetectionChancePerHundredMeters * Math.Floor(hundredMetersToPlayer);
+            return finalDetectionChance;
+        }
+
+        public string GetDamageReport()
+        {
+            if (Health <= 20)
+            {
+                return "Our hull is critically compormised";
+            }
+            else if (20 < Health && Health <= 60)
+            {
+                return "Our hull is heavily damaged";
+            }
+            else if (20 < Health && Health <= 60)
+            {
+                return "Our hull is damaged";
+            }
+            else if (60 < Health && Health <= 99)
+            {
+                return "Our hull is slightly damaged";
+            }
+            else
+            {
+                return "Our hull is untouched";
+            }
+        } 
+
+        public void SetDamage(int amount)
+        {
+            if (amount > 0)
+            {
+                Console.WriteLine("Hit!");
+                Console.WriteLine(GetDamageReport());
+
+                if (Health - amount <= 0)
+                {
+                    Health = 0;
+                }
+                else
+                {
+                    Health -= amount;
+                }
+            }
+            else
+            {
+                Console.WriteLine("They missed!");
             }
         }
 
