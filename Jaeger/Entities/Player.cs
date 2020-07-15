@@ -7,17 +7,13 @@ using System.Threading.Tasks;
 
 namespace MeerJager.Entities
 {
-    public sealed class Player
+    public sealed class Player : Vessel
     {
         private static Player Instance = null;
 
-        public int Health { get; set; }
-        public Weapon[] Armament { get; set; }
         public int Torpedos { get; set; }
         public int Supplies { get; set; }
-        public int Profile { get; set; } //profile is the size of the ships profile
         public int PoliticalCapital { get; set; }
-        public Depth Depth { get; set; }
         public List<ActiveTorpedos> ActiveTorpedos { get; set; }
         
 
@@ -37,7 +33,7 @@ namespace MeerJager.Entities
         Player()
         {
             Health = 100;
-            Profile = 10;
+            Profile = 30;
             Depth = Depths.GetDepths[2];
             Armament = new Weapon[5];
             for (int i = 0; i < 4; i++)
@@ -71,6 +67,8 @@ namespace MeerJager.Entities
             PoliticalCapital = 10;
             Torpedos = 22;
             ActiveTorpedos = new List<ActiveTorpedos>();
+            AccousticDetectionAbility = 0.5f;
+            VisualDetectionAbility = 0.5f;
         }
 
         public void ExecuteAttack(){
@@ -117,10 +115,10 @@ namespace MeerJager.Entities
 
         public double GetProfile(double _enemyDetectionAbility, int _enemyDistance)
         {
-            double playerProfileAfterDepth = Profile * Depth.ProfileMultiplier;
+            double playerProfileAfterDepth = Profile * Depth.ChanceToSeeModifier;
             double baseDetectionChancePerHundredMeters = _enemyDetectionAbility * playerProfileAfterDepth; //players depth profile modified by the enemy detection ability
             double hundredMetersToPlayer = _enemyDistance / 100;
-            double finalDetectionChance = baseDetectionChancePerHundredMeters * Math.Floor(hundredMetersToPlayer);
+            double finalDetectionChance = (baseDetectionChancePerHundredMeters * 10) * Math.Floor(hundredMetersToPlayer);
             return finalDetectionChance;
         }
 

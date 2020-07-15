@@ -1,0 +1,8 @@
+﻿
+Randomised Enemny
+	 - Range of classes with different possible configurations
+		- Load possiblities from json?
+
+	 - Random starting possition
+
+	 - convert all distance to M

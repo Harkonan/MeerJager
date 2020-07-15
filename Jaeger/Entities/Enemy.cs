@@ -12,16 +12,25 @@ namespace MeerJager.Entities
         public Enemy[] Vessels { get; set; }
     }
 
-    public class Enemy
+    public class EnemyDirectory
     {
-        public int Health { get; set; }
-        public int Profile { get; set; }
-        public Weapon[] Armament { get; set; }
-        public Boolean isEngaged { get; set; }
-        public Boolean playerCanSee { get; set; }
-        public int DistanceToPlayer { get; set; } //in meters
-        public double DetectionAbility { get; set; } // 0 to 1 what percentage of the profile does the detection calculation use
+        public List<EnemyType> Frigates { get; set; }
+    }
+    public class EnemyType
+    {
         public string UIName { get; set; }
+        public int HealthMax { get; set; }
+        public int HealthMin { get; set; }
+        public int ProfileMin { get; set; }
+        public int ProfileMax { get; set; }
+    }
+
+    public class Enemy : Vessel
+    {
+        public Boolean CanSeePlayer { get; set; }
+        public Boolean PlayerCanSee { get; set; }
+        public int DistanceToPlayer { get; set; } //in meters
+
 
 
         public Enemy()
@@ -29,10 +38,11 @@ namespace MeerJager.Entities
             UIName = "Dover Class frigate";
             Health = 100;
             Profile = 50;
-            isEngaged = false;
-            playerCanSee = false;
-            DistanceToPlayer = 2000;
-            DetectionAbility = 1;
+            CanSeePlayer = false;
+            PlayerCanSee = false;
+            DistanceToPlayer = 40000;
+            AccousticDetectionAbility = 0.5f;
+            VisualDetectionAbility = 0.5f;
             Weapon Gun = new Weapon()
             {
                 Damage = 10,
@@ -42,28 +52,30 @@ namespace MeerJager.Entities
             };
             Armament = new Weapon[1];
             Armament[0] = Gun;
+            Depth = Depths.GetDepths[0];
         }
 
-        public void CycleWeapons(Player Target){
+        public void CycleWeapons(Player Target)
+        {
             var loadedGuns = Armament.Where(x => x.Status == WeaponStatus.loaded);
             foreach (var gun in loadedGuns)
             {
-                double profile = Target.GetProfile(DetectionAbility, DistanceToPlayer);
-                int damage = gun.FireWeapon(profile);
-                UIScreen.DisplayLines.Add(String.Format("{0} has fired!", UIName));
-                Target.SetDamage(damage);
-                   
+                //double profile = Target.GetProfile(DetectionAbility, DistanceToPlayer);
+                //int damage = gun.FireWeapon(profile);
+                //UIScreen.DisplayLines.Add(String.Format("{0} has fired!", UIName));
+                //Target.SetDamage(damage);
+
             }
 
             ReloadGuns();
         }
 
-        public void PlayerCloseDistance()
+        public void CloseDistance()
         {
             ChangeDistance(-100);
         }
 
-        public void PlayerOpenDistance()
+        public void OpenDistance()
         {
             ChangeDistance(100);
         }
@@ -79,22 +91,37 @@ namespace MeerJager.Entities
                 DistanceToPlayer = 0;
             }
 
-
-            UIScreen.DisplayLines.Add(string.Format("Captain, {0} is now at {1}km", UIName, DistanceToPlayer));
+            if (PlayerCanSee)
+            {
+                UIScreen.DisplayLines.Add(string.Format("Captain, {0} is now at {1}m", UIName, DistanceToPlayer));
+            }
         }
 
         public void Engage()
         {
-            isEngaged = true;
+            CanSeePlayer = true;
             UIScreen.DisplayLines.Add(string.Format("Captain, {0} is moving to engage!", UIName));
+        }
+        public void Disengage()
+        {
+            CanSeePlayer = false;
+            UIScreen.DisplayLines.Add(string.Format("Captain, {0} has lost us!", UIName));
         }
 
         public void Spotted()
         {
-            if (!playerCanSee)
+            if (!PlayerCanSee)
             {
-                playerCanSee = true;
-                UIScreen.DisplayLines.Add(string.Format("{0} Spotted!", UIName));
+                PlayerCanSee = true;
+                UIScreen.DisplayLines.Add(string.Format("{0} Spotted at {1}m!", UIName, DistanceToPlayer));
+            }
+        }
+        public void Unspotted()
+        {
+            if (PlayerCanSee)
+            {
+                PlayerCanSee = false;
+                UIScreen.DisplayLines.Add(string.Format("We have lost track on the Enemy Ship!"));
             }
         }
 
@@ -155,5 +182,56 @@ namespace MeerJager.Entities
                 UIScreen.DisplayLines.Add(string.Format("{0} missed!", WeaponSystem));
             }
         }
+
+        public double GetProfile(double _playerDetectionAbility)
+        {
+            double ProfileAfterDepth = (Profile / 10) * Depth.ChanceToSeeModifier;
+            double baseDetectionChancePerHundredMeters = _playerDetectionAbility * ProfileAfterDepth; //players depth profile modified by the enemy detection ability
+            double hundredMetersToPlayer = DistanceToPlayer / 100;
+            double finalDetectionChance = baseDetectionChancePerHundredMeters * Math.Floor(hundredMetersToPlayer);
+            return finalDetectionChance;
+        }
+
+        public void CheckDetection(Player player)
+        {
+            //Can the Enemy See the player
+            //Visual Check
+            var BaseProfile = Profile * Depth.ChanceToSeeModifier;
+            var VisualDetectionChance = BaseProfile + (BaseProfile * ((10000 * DistanceToPlayer) / 10000));
+
+            var AcousticalDetectionChance = Noise * Math.Pow(1.2 / (DistanceToPlayer / 1000), 0.25) * Depth.ChanceToHearModifer;
+
+            int VisualRoll = Dice.RollPercentage();
+            int AcousticalRoll = Dice.RollPercentage();
+
+            if (VisualDetectionChance > VisualRoll || AcousticalDetectionChance > AcousticalRoll )
+            {
+                Engage();
+            }
+            else
+            {
+                Disengage();
+            }
+
+            //Can the Player See this enemy
+            //Visual Check
+            var PlayerBaseProfile = player.Profile * player.Depth.ChanceToSeeModifier;
+            var PlayerVisualDetectionChance = PlayerBaseProfile + (PlayerBaseProfile * ((10000 * DistanceToPlayer) / 10000));
+
+            var PlayerAcousticalDetectionChance = player.Noise * Math.Pow(1.2 / (DistanceToPlayer / 1000), 0.25) * player.Depth.ChanceToHearModifer;
+
+            int PlayerVisualRoll = Dice.RollPercentage();
+            int PlayerAcousticalRoll = Dice.RollPercentage();
+
+            if (PlayerVisualDetectionChance > PlayerVisualRoll || PlayerAcousticalDetectionChance > PlayerAcousticalRoll)
+            {
+                Spotted();
+            }
+            else
+            {
+                Unspotted();
+            }
+        }
+
     }
 }

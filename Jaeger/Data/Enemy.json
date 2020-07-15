@@ -1,0 +1,26 @@
+{
+  "Frigates": [
+    {
+      "UIName": "Hunt",
+      "HealthMin": 100,
+      "HealthMax": 130,
+      "ProfileMin": 8,
+      "ProfileMax": 85
+
+    },
+    {
+      "UIName": "Black Swan",
+      "HealthMin": 120,
+      "HealthMax": 130,
+      "ProfileMin": 11,
+      "ProfileMax": 91
+    },
+    {
+      "UIName": "Loch",
+      "HealthMin": 140,
+      "HealthMax": 150,
+      "ProfileMin": 11,
+      "ProfileMax": 94
+    }
+  ]
+}

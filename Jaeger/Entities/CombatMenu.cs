@@ -19,7 +19,14 @@ namespace MeerJager.Entities
             while (player.Health > 0 && _enemy.Health > 0)
             {
                 CombatRound();
-                GetPlayerChoice();
+                if (enemy.PlayerCanSee || enemy.CanSeePlayer)
+                {
+                    GetPlayerChoice();
+                }
+                else
+                {
+                    enemy.CloseDistance();
+                }
             }
             if (player.Health <= 0)
             {
@@ -40,7 +47,7 @@ namespace MeerJager.Entities
                 Display = "Close Distance",
                 Key = 'C',
                 Id = OptionNumber++,
-                Action = enemy.PlayerCloseDistance
+                Action = enemy.CloseDistance
             };
             menuOptions.Add(closeDistance);
             var openDistance = new MenuOption()
@@ -48,7 +55,7 @@ namespace MeerJager.Entities
                 Display = "Open Distance",
                 Key = 'O',
                 Id = OptionNumber++,
-                Action = enemy.PlayerOpenDistance
+                Action = enemy.OpenDistance
             };
             menuOptions.Add(openDistance);
             var holdPosition = new MenuOption()
@@ -217,12 +224,12 @@ namespace MeerJager.Entities
         {
             UIScreen.DisplayLines.Add("XO's report:");
 
-            if (enemy.playerCanSee)
+            if (enemy.PlayerCanSee)
             {
 
-                UIScreen.DisplayLines.Add(String.Format("Captain, we have one enemy {0} at {1}km ahead", enemy.UIName, enemy.DistanceToPlayer / 100));
+                UIScreen.DisplayLines.Add(String.Format("Captain, we have one enemy {0} at {1}m ahead", enemy.UIName, enemy.DistanceToPlayer));
                 UIScreen.DisplayLines.Add("The " + enemy.GetDamageReport());
-                if (enemy.isEngaged)
+                if (enemy.CanSeePlayer)
                 {
                     UIScreen.DisplayLines.Add("They are aware of our presence and are moving to engage");
                 }
@@ -235,7 +242,7 @@ namespace MeerJager.Entities
                 UIScreen.DisplayLines.Add(string.Format("We currently have {0} Torpedos in the water", player.ActiveTorpedos.Count));
                 foreach (var ActiveTorpedo in player.ActiveTorpedos)
                 {
-                    UIScreen.DisplayLines.Add(string.Format("{0} is {1}km from the {2}", ActiveTorpedo.UIName, ActiveTorpedo.DistanceToTarget/100, ActiveTorpedo.Target.UIName));
+                    UIScreen.DisplayLines.Add(string.Format("{0} is {1}m from the {2}", ActiveTorpedo.UIName, ActiveTorpedo.DistanceToTarget, ActiveTorpedo.Target.UIName));
                 }
             }
 
@@ -252,12 +259,12 @@ namespace MeerJager.Entities
             player.ActiveTorpedos.RemoveAll(x => x.Finished);
 
 
-            if (!enemy.playerCanSee)
+            if (!enemy.PlayerCanSee)
             {
                 //TODO: Make it so enemy can loose site of you
                 PlayerSearching();
             }
-            if (!enemy.isEngaged)
+            if (!enemy.CanSeePlayer)
             {
                 //TODO: make it so you can loose site of the enemy
                 EnemySearching();
@@ -271,8 +278,19 @@ namespace MeerJager.Entities
 
         private static void PlayerSearching()
         {
-            //TODO: For Daryl
-            enemy.Spotted();
+            if (enemy.DistanceToPlayer < 100)
+            {
+                enemy.Spotted();
+            }
+            else
+            {
+                double profile = enemy.GetProfile(player.DetectionAbility);
+                int roll = Dice.RollPercentage();
+                if (profile > roll)
+                {
+                    enemy.Spotted();
+                }
+            }
         }
 
         public static void EnemySearching()
@@ -281,6 +299,7 @@ namespace MeerJager.Entities
             if (enemy.DistanceToPlayer < 100)
             {
                 enemy.Engage();
+                enemy.Spotted();
             }
             else
             {
@@ -288,10 +307,11 @@ namespace MeerJager.Entities
                 int roll = Dice.RollPercentage();
                 if (profile > roll)
                 {
-                    enemy.Spotted();
                     enemy.Engage();
+                    enemy.Spotted();
                 }
             }
         }
+
     }
 }

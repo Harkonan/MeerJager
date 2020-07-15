@@ -27,17 +27,18 @@ namespace Jaeger.Entities
         Depths()
         {
             Options = new Depth[4];
-            Options[0] = new Depth() { DepthName = "Surface", ProfileMultiplier = 1, DepthOrder = 3 };
-            Options[1] = new Depth() { DepthName = "Periscope", ProfileMultiplier = 0.6, DepthOrder = 2};
-            Options[2] = new Depth() { DepthName = "Cruising", ProfileMultiplier = 0.2, DepthOrder = 1};
-            Options[3] = new Depth() { DepthName = "Evasion", ProfileMultiplier = 0.01, DepthOrder = 0};
+            Options[0] = new Depth() { DepthName = "Surface", ChanceToSeeModifier = 1, ChanceToHearModifer = 1, DepthOrder = 3 };
+            Options[1] = new Depth() { DepthName = "Periscope", ChanceToSeeModifier = 0.6, ChanceToHearModifer = 0.6, DepthOrder = 2};
+            Options[2] = new Depth() { DepthName = "Cruising", ChanceToSeeModifier = 0.001, ChanceToHearModifer = 0.4, DepthOrder = 1};
+            Options[3] = new Depth() { DepthName = "Evasion", ChanceToSeeModifier = 0.001, ChanceToHearModifer = 0.2, DepthOrder = 0};
         }
 
     }
 
     public class Depth
     {
-        public double ProfileMultiplier { get; set; }
+        public double ChanceToSeeModifier { get; set; }
+        public double ChanceToHearModifer { get; set; }
         public string DepthName { get; set; }
         public int DepthOrder { get; set; }
     }
