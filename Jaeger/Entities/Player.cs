@@ -18,6 +18,7 @@ namespace MeerJager.Entities
         public int Profile { get; set; } //profile is the size of the ships profile
         public int PoliticalCapital { get; set; }
         public Depth Depth { get; set; }
+        public List<ActiveTorpedos> ActiveTorpedos { get; set; }
         
 
         public static Player GetPlayer
@@ -41,14 +42,20 @@ namespace MeerJager.Entities
             Armament = new Weapon[5];
             for (int i = 0; i < 4; i++)
             {
+                List<Depth> ValidDepths = new List<Depth>();
+                ValidDepths.Add(Depths.GetDepths[0]);
+                ValidDepths.Add(Depths.GetDepths[1]);
+
                 Weapon weapon = new Weapon()
                 {
                     Damage = 55,
                     Type = WeaponType.Torpedo,
-                    ReloadRounds = 120,
+                    ReloadRounds = 3,
                     HitPercent = 30,
-                    Loaded = true,
-                    UIName = "Tube "+i++
+                    Status = WeaponStatus.loaded,
+                    UIName = "Tube " + (i + 1),
+                    Speed = 500,
+                    FiringDepths = ValidDepths
                 };
                 Armament[i] = weapon;
             }
@@ -63,11 +70,29 @@ namespace MeerJager.Entities
             Supplies = 200;
             PoliticalCapital = 10;
             Torpedos = 22;
+            ActiveTorpedos = new List<ActiveTorpedos>();
         }
 
-        public void FireWeapon(int x){
-            
-        
+        public void ExecuteAttack(){
+            foreach (var weapon in Armament.Where(x => x.Status == WeaponStatus.firing))
+            {
+                if (weapon.Type == WeaponType.Torpedo)
+                {
+                    UIScreen.DisplayLines.Add(weapon.UIName + " Launched");
+                    weapon.ReloadRoundsLeft = weapon.ReloadRounds;
+                    Torpedos--;
+                    weapon.Status = WeaponStatus.reloading;
+                    ActiveTorpedos.Add(new ActiveTorpedos()
+                    {
+                        Damage = weapon.Damage,
+                        Target = weapon.Target,
+                        DistanceToTarget = weapon.Target.DistanceToPlayer,
+                        HitPercent = weapon.HitPercent,
+                        Speed = weapon.Speed.Value,
+                        UIName = "Active Torpedo "+ (ActiveTorpedos.Count()+1)
+                    });
+                }
+            }
         }
 
         public void RaiseDepth()
@@ -145,7 +170,13 @@ namespace MeerJager.Entities
             }
         }
 
-        
+        public void ReloadGuns()
+        {
+            foreach (var Weapon in Armament)
+            {
+                Weapon.Reload();
+            }
+        }
 
     }
 

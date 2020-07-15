@@ -13,19 +13,26 @@ namespace MeerJager.Entities
         public int ReloadRounds { get; set; }
         public int ReloadRoundsLeft { get; set; }
         public int HitPercent { get; set; }
-        public Boolean Loaded { get; set; }
-        public int? Speed {get; set;}
-        public string UIName {get; set;}
-
+        public int? Speed { get; set; }
+        public string UIName { get; set; }
         public WeaponType Type { get; set; }
+        public Enemy Target { get; set; }
+        public WeaponStatus Status { get; set; }
+        public List<Depth> FiringDepths { get; set; }
+
+        public Weapon()
+        {
+            FiringDepths = new List<Depth>();
+            Status = WeaponStatus.loaded;
+        }
 
         public int FireWeapon(double _targetProfile)
         {
-            Loaded = false;
+            Status = WeaponStatus.empty;
             ReloadRoundsLeft = ReloadRounds;
 
             int Roll = Dice.RollPercentage();
-            
+
             if (Roll > _targetProfile)
             {
                 return Damage;
@@ -38,18 +45,46 @@ namespace MeerJager.Entities
 
         public void Reload()
         {
-            if (!Loaded)
+            if (Status == WeaponStatus.reloading)
             {
                 ReloadRoundsLeft--;
                 if (ReloadRoundsLeft == 0)
                 {
-                    Loaded = true;
+                    Status = WeaponStatus.loaded;
                 }
             }
+        }
+
+        public string ListValidFirindDeapths()
+        {
+            string returnValue = "";
+            foreach (var Depth in FiringDepths)
+            {
+                returnValue += Depth.DepthName;
+                
+                if (Depth != FiringDepths.Last())
+                {
+                    if (Depth == FiringDepths[FiringDepths.Count - 2])
+                    {
+                        returnValue += " or ";
+                    }
+                    else
+                    {
+                        returnValue += ", ";
+                    }
+                    
+                }
+            }
+
+            return returnValue;
         }
     }
 
 
 
-public enum WeaponType {MainBattery, Torpedo, SecondaryBattery }
+    public enum WeaponType { MainBattery, Torpedo, SecondaryBattery }
+    public enum WeaponStatus { firing, reloading, empty, loaded}
+
 }
+
+

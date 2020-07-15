@@ -53,12 +53,12 @@ namespace Jaeger.Entities
             do
             {
                 Char key = Console.ReadKey().KeyChar;
-                if (Menu.Any(x => char.ToLower(x.Key) == char.ToLower(key)))
+                if (Menu.Any(x => char.ToLower(x.Key ?? ' ') == char.ToLower(key)))
                 {
                     isValidKey = true;
                     Console.Clear();
                     DisplayLines.Clear();
-                    Menu.Where(x => char.ToLower(x.Key) == char.ToLower(key)).FirstOrDefault().Action();
+                    Menu.Where(x => char.ToLower(x.Key ?? ' ') == char.ToLower(key)).FirstOrDefault().Action();
                     Menu.Clear();
                 }
             } while (!isValidKey);
