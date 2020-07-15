@@ -47,7 +47,8 @@ namespace MeerJager.Entities
                     Type = WeaponType.Torpedo,
                     ReloadRounds = 120,
                     HitPercent = 30,
-                    Loaded = true
+                    Loaded = true,
+                    UIName = "Tube "+i++
                 };
                 Armament[i] = weapon;
             }
@@ -62,6 +63,11 @@ namespace MeerJager.Entities
             Supplies = 200;
             PoliticalCapital = 10;
             Torpedos = 22;
+        }
+
+        public void FireWeapon(int x){
+            
+        
         }
 
         public void RaiseDepth()

@@ -20,7 +20,7 @@ namespace MeerJager.Entities
             {
                 CombatRound();
                 GetPlayerChoice();
-                UIScreen.RenderScreen();
+                
             }
         }
 
@@ -73,6 +73,15 @@ namespace MeerJager.Entities
                 menuOptions.Add(lowerDepth);
             }
 
+            var Weapons = new MenuOption(){
+                Display = "Weapons Systems",
+                Key = 'W',
+                Id = OptionNumber,
+                Action = GetPlayerWeaponChoice
+            };
+            OptionNumber++;
+            menuOptions.Add(Weapons);
+
             var sitRep = new MenuOption()
             {
                 Display = "Situation Report",
@@ -83,9 +92,41 @@ namespace MeerJager.Entities
             OptionNumber++;
             menuOptions.Add(sitRep);
 
+
             UIScreen.MenuTitle = "What are your orders Captain?";
             UIScreen.Menu = menuOptions;
+            UIScreen.RenderScreen();
+        }
 
+        public static void GetPlayerWeaponChoice(){
+            int OptionNumber = 1;
+            var menuOptions = new List<MenuOption>();
+
+            foreach (var weapon in player.Armament)
+	        {
+                if (weapon.Type == WeaponType.Torpedo)
+	            {
+                    var torp = new MenuOption(){
+                    Display = weapon.UIName,
+                    Key = '1',
+                    Id = OptionNumber,
+                    Action = GetPlayerChoice
+                    };
+	            }
+	        }
+
+            var back = new MenuOption(){
+                Display= "Back",
+                Key = 'B',
+                Id = OptionNumber,
+                Action = GetPlayerChoice
+            };
+            OptionNumber++;
+            menuOptions.Add(back);
+
+            UIScreen.MenuTitle = "Weapons Systems";
+            UIScreen.Menu = menuOptions;
+            UIScreen.RenderScreen();
         }
 
 
@@ -123,17 +164,7 @@ namespace MeerJager.Entities
             }
             else
             {
-                var loadedGuns = enemy.Armament.Where(x => x.Loaded);
-                foreach (var gun in loadedGuns)
-                {
-                    double profile = player.GetProfile(enemy.DetectionAbility, enemy.DistanceToPlayer);
-                    int damage = gun.FireWeapon(profile);
-                    UIScreen.DisplayLines.Add(String.Format("Enemy has fired!"));
-                    player.SetDamage(damage);
-                   
-                }
-
-                enemy.ReloadGuns();
+                enemy.CycleWeapons(player);
             }
         }
 

@@ -42,6 +42,20 @@ namespace MeerJager.Entities
             Armament[0] = Gun;
         }
 
+        public void CycleWeapons(Player Target){
+            var loadedGuns = Armament.Where(x => x.Loaded);
+            foreach (var gun in loadedGuns)
+            {
+                double profile = Target.GetProfile(DetectionAbility, DistanceToPlayer);
+                int damage = gun.FireWeapon(profile);
+                UIScreen.DisplayLines.Add(String.Format("Enemy has fired!"));
+                Target.SetDamage(damage);
+                   
+            }
+
+            ReloadGuns();
+        }
+
         public void PlayerCloseDistance()
         {
             ChangeDistance(-100);

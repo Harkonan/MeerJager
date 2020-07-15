@@ -14,6 +14,8 @@ namespace MeerJager.Entities
         public int ReloadRoundsLeft { get; set; }
         public int HitPercent { get; set; }
         public Boolean Loaded { get; set; }
+        public int? Speed {get; set;}
+        public string UIName {get; set;}
 
         public WeaponType Type { get; set; }
 
@@ -46,6 +48,8 @@ namespace MeerJager.Entities
             }
         }
     }
+
+
 
 public enum WeaponType {MainBattery, Torpedo, SecondaryBattery }
 }
