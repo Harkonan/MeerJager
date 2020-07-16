@@ -45,10 +45,18 @@ namespace MeerJager.Entities
 
             Weapon DepthCharge = new Weapon()
             {
-                Damage = new Range(70, 120)
+                Damage = new Range(70, 120),
+                EffectiveDepths = Depths.GetDepths.Where(x => x.DepthOrder < 1).ToList(),
+                HitPercent = 90,
+                Range = new Range(0, 1000),
+                ReloadRounds = 2,
+                Type = WeaponType.DepthCharge,
+                UIName = "Hedgehog Depth Charge"
             };
-            
-            Armament = new Weapon[3];
+
+            Armament = new Weapon[1];
+            Armament[0] = DepthCharge;
+
             
             
 
@@ -59,22 +67,22 @@ namespace MeerJager.Entities
 
         public void CycleWeapons(Player Target)
         {
-            var loadedGuns = Armament.Where(x => x.Status == WeaponStatus.loaded);
-            foreach (var gun in loadedGuns)
+            var LoadedArmament = Armament.Where(x => x.Status == WeaponStatus.loaded);
+            foreach (var Armament in LoadedArmament)
             {
                 double profile = Math.Max(AcousticalDetectionCalculation(this), VisualDetectionCalculation(this));
-                int damage = gun.FireWeapon(profile);
+                int damage = Armament.FireWeapon(profile);
                 if (PlayerCanSee)
                 {
-                    UIScreen.DisplayLines.Add(String.Format("{0} has fired!", UIName));
+                    UIScreen.DisplayLines.Add(String.Format("{0} has fired {1}!", UIName, Armament.UIName));
                 }
                 else
                 {
-                    UIScreen.DisplayLines.Add(String.Format("Incoming fire from unknown vessel!"));
+                    UIScreen.DisplayLines.Add(String.Format("Incoming {0} fire from unknown vessel!", Armament.Type.ToString()));
                 }
+                Armament.Status = WeaponStatus.reloading;
                 Target.SetDamage(damage);
             }
-
             ReloadGuns();
         }
 

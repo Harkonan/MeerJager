@@ -5,3 +5,5 @@ Secondary Battery - Only fire at surfaced or periscope depth vessels, long range
 Depth Charges 
 	- Normal sub 1000m range only on submersed vessels
 
+
+Torpedo miss & early detonation

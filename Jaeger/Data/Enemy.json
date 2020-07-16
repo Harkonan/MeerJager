@@ -2,25 +2,36 @@
   "Frigates": [
     {
       "UIName": "Hunt",
-      "HealthMin": 100,
-      "HealthMax": 130,
-      "ProfileMin": 8,
-      "ProfileMax": 85
-
+      "Health": {
+        "Min": 100,
+        "Max": 130
+      },
+      "Profile": {
+        "Min": 8,
+        "Max": 85
+      }
     },
     {
       "UIName": "Black Swan",
-      "HealthMin": 120,
-      "HealthMax": 130,
-      "ProfileMin": 11,
-      "ProfileMax": 91
+      "Health": {
+        "Min": 120,
+        "Max": 130
+      },
+      "Profile": {
+        "Min": 11,
+        "Max": 91
+      }
     },
     {
       "UIName": "Loch",
-      "HealthMin": 140,
-      "HealthMax": 150,
-      "ProfileMin": 11,
-      "ProfileMax": 94
+      "Health": {
+        "Min": 140,
+        "Max": 150
+      },
+      "Profile": {
+        "Min": 11,
+        "Max": 94
+      }
     }
   ]
 }
