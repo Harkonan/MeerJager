@@ -11,7 +11,7 @@ namespace MeerJager.Entities
     {
         private static Player Instance = null;
 
-        public int Torpedos { get; set; }
+
         public int Supplies { get; set; }
         public int PoliticalCapital { get; set; }
         public List<ActiveTorpedos> ActiveTorpedos { get; set; }
@@ -51,9 +51,10 @@ namespace MeerJager.Entities
                     ReloadRounds = 3,
                     HitPercent = 30,
                     Status = WeaponStatus.loaded,
-                    UIName = "Tube " + (i + 1),
+                    UIName = "Tube " + (i + 1) +" - G7e/T4 Falke",
                     Speed = 500,
-                    FiringDepths = ValidDepths
+                    FiringDepths = Depths.GetDepths[0..2].ToList(),
+                    Range = new Range(500,7500)
                 };
                 Armament[i] = weapon;
             }
@@ -62,12 +63,16 @@ namespace MeerJager.Entities
                 Type = WeaponType.MainBattery,
                 Damage = new Range(10, 20),
                 HitPercent = 80,
-                ReloadRounds = 5
+                ReloadRounds = 1,
+                UIName = "8.8cm SK C/35 - Bow Mounted",
+                FiringDepths = new List<Depth>() { Depths.GetDepths[0] },
+                Range = new Range(0, 11950)
             };
             Armament[4] = BowGun;
             Supplies = 200;
             PoliticalCapital = 10;
-            Torpedos = 22;
+            Torpedos = 10;
+            Shells = 220;
             ActiveTorpedos = new List<ActiveTorpedos>();
             AccousticDetectionAbility = 1.0f;
         }
@@ -79,9 +84,6 @@ namespace MeerJager.Entities
                 if (weapon.Type == WeaponType.Torpedo)
                 {
                     UIScreen.DisplayLines.Add(weapon.UIName + " Launched");
-                    weapon.ReloadRoundsLeft = weapon.ReloadRounds;
-                    Torpedos--;
-                    weapon.Status = WeaponStatus.reloading;
                     ActiveTorpedos.Add(new ActiveTorpedos()
                     {
                         Damage = weapon.Damage.WeightedRandom(10),
@@ -92,7 +94,14 @@ namespace MeerJager.Entities
                         UIName = "Active Torpedo " + (ActiveTorpedos.Count() + 1)
                     });
                 }
+                else
+                {
+                    int Damage = weapon.FireWeapon(weapon.Target.getHighestDetection(this, weapon.Target));
+                    weapon.Target.SetDamage(weapon.Damage.WeightedRandom(10), weapon.UIName);
+                }
+                weapon.Status = WeaponStatus.empty;
             }
+            
         }
 
         public void RaiseDepth()
@@ -161,13 +170,6 @@ namespace MeerJager.Entities
             }
         }
 
-        public void ReloadGuns()
-        {
-            foreach (var Weapon in Armament)
-            {
-                Weapon.Reload();
-            }
-        }
 
     }
 

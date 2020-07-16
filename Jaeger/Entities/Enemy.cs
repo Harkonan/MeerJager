@@ -37,6 +37,8 @@ namespace MeerJager.Entities
             Health = 100;
             Profile = 50;
             Noise = 90;
+            Torpedos = int.MaxValue;
+            Shells = int.MaxValue;
             CanSeePlayer = false;
             PlayerCanSee = false;
             DistanceToPlayer = 40000;
@@ -150,9 +152,9 @@ namespace MeerJager.Entities
 
         public void ReloadGuns()
         {
-            foreach (var gun in Armament)
+            foreach (var Weapon in Armament)
             {
-                gun.Reload();
+                Weapon.Reload();
             }
         }
 
@@ -176,7 +178,7 @@ namespace MeerJager.Entities
                 {
                     return string.Format("{0}'s hull is damaged", UIName);
                 }
-                else if (60 < Health && Health <= 99)
+                else if (60 < Health && Health <= 100)
                 {
                     return string.Format("{0}'s hull is slightly damaged", UIName);
                 }
@@ -263,6 +265,11 @@ namespace MeerJager.Entities
             {
                 Unspotted();
             }
+        }
+
+        public double getHighestDetection(Vessel SeekingVessel, Vessel HidingVessel)
+        {
+            return Math.Max(VisualDetectionCalculation(SeekingVessel, HidingVessel), AcousticalDetectionCalculation(SeekingVessel, HidingVessel));
         }
 
         private double VisualDetectionCalculation(Vessel SeekingVessel, Vessel HidingVessel)

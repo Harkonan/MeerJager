@@ -132,72 +132,87 @@ namespace MeerJager.Entities
             int OptionNumber = 1;
             var menuOptions = new List<MenuOption>();
             UIScreen.DisplayLines.Add("Weapons Report Captain: ");
+            UIScreen.DisplayLines.Add(String.Format("Current Target is {0} at Range {1}", enemy.UIName, enemy.DistanceToPlayer));
 
             foreach (var weapon in player.Armament)
             {
-                if (weapon.Type == WeaponType.Torpedo)
+                weapon.Target = enemy;
+                switch (weapon.Status)
                 {
-                    switch (weapon.Status)
-                    {
-                        case WeaponStatus.firing:
-                            UIScreen.DisplayLines.Add(string.Format("{0} is prepairing to fire!", weapon.UIName));
+                    case WeaponStatus.firing:
+                        UIScreen.DisplayLines.Add(string.Format("{0} is prepairing to fire!", weapon.UIName));
 
-                            var firing = new MenuOption()
+                        var firing = new MenuOption()
+                        {
+                            Display = string.Format("Belay {0} firing", weapon.UIName),
+                            Key = Convert.ToChar(OptionNumber.ToString()),
+                            Id = OptionNumber++,
+                            Action = () =>
                             {
-                                Display = string.Format("Belay {0} firing", weapon.UIName),
+                                weapon.Status = WeaponStatus.loaded;
+                                GetPlayerWeaponChoice();
+                            }
+                        };
+                        menuOptions.Add(firing);
+                        break;
+                    case WeaponStatus.reloading:
+                        UIScreen.DisplayLines.Add(string.Format("{0} is loading ({1} turns remaining)", weapon.UIName, weapon.ReloadRoundsLeft));
+                        OptionNumber++;
+                        break;
+                    case WeaponStatus.empty:
+                        if (weapon.ReloadRoundsLeft == 0)
+                        {
+                            UIScreen.DisplayLines.Add(string.Format("{0} is empty and we have no more ammunition in stores", weapon.UIName));
+                        }
+                        else
+                        {
+                            UIScreen.DisplayLines.Add(string.Format("{0} is empty", weapon.UIName));
+                        }
+                        
+                        OptionNumber++;
+                        break;
+                    case WeaponStatus.loaded:
+                        if (weapon.FiringDepths.Contains(player.Depth) && weapon.Range.Max > weapon.Target.DistanceToPlayer && weapon.Range.Min < weapon.Target.DistanceToPlayer)
+                        {
+                            UIScreen.DisplayLines.Add(string.Format("{0} is ready to fire!", weapon.UIName));
+
+                            var loaded = new MenuOption()
+                            {
+                                Display = "Fire " + weapon.UIName,
                                 Key = Convert.ToChar(OptionNumber.ToString()),
                                 Id = OptionNumber++,
                                 Action = () =>
                                 {
-                                    weapon.Status = WeaponStatus.loaded;
+                                    weapon.Status = WeaponStatus.firing;
                                     GetPlayerWeaponChoice();
                                 }
                             };
-                            menuOptions.Add(firing);
-                            break;
-                        case WeaponStatus.reloading:
-                            UIScreen.DisplayLines.Add(string.Format("{0} is loading ({1} turns remaining)", weapon.UIName, weapon.ReloadRoundsLeft));
-                            OptionNumber++;
-                            break;
-                        case WeaponStatus.empty:
-                            UIScreen.DisplayLines.Add(string.Format("{0} is empty", weapon.UIName));
-                            OptionNumber++;
-                            break;
-                        case WeaponStatus.loaded:
-                            if (weapon.FiringDepths.Contains(player.Depth))
+                            menuOptions.Add(loaded);
+                        }
+                        else
+                        {
+                            if (!weapon.FiringDepths.Contains(player.Depth))
                             {
-                                UIScreen.DisplayLines.Add(string.Format("{0} is ready to fire!", weapon.UIName));
-
-                                var loaded = new MenuOption()
-                                {
-                                    Display = "Fire " + weapon.UIName,
-                                    Key = Convert.ToChar(OptionNumber.ToString()),
-                                    Id = OptionNumber++,
-                                    Action = () =>
-                                    {
-                                        weapon.Status = WeaponStatus.firing;
-                                        weapon.Target = enemy;
-                                        GetPlayerWeaponChoice();
-                                    }
-                                };
-                                menuOptions.Add(loaded);
-                            }
-                            else
-                            {
-
-
                                 UIScreen.DisplayLines.Add(string.Format("{1} can only be fired at {0} depth", weapon.ListValidFirindDeapths(), weapon.UIName));
                                 OptionNumber++;
                             }
+                            else if(weapon.Range.Max < weapon.Target.DistanceToPlayer || weapon.Range.Min > weapon.Target.DistanceToPlayer)
+                            {
+                                UIScreen.DisplayLines.Add(string.Format("{0} can only be fired at ranges between {1} and {2}",weapon.UIName, weapon.Range.Min, weapon.Range.Max, weapon.Target.DistanceToPlayer));
+                                OptionNumber++;
+                            }
 
-                            break;
-                        default:
-                            break;
-                    }
+                            
+                        }
 
-
-
+                        break;
+                    default:
+                        break;
                 }
+
+
+
+
             }
 
             if (player.Armament.Any(x => x.Status == WeaponStatus.firing))
@@ -238,7 +253,6 @@ namespace MeerJager.Entities
 
             if (enemy.PlayerCanSee)
             {
-
                 UIScreen.DisplayLines.Add(String.Format("Captain, we have one enemy {0} at {1}m ahead", enemy.UIName, enemy.DistanceToPlayer));
                 UIScreen.DisplayLines.Add("The " + enemy.GetDamageReport());
                 if (enemy.CanSeePlayer)
@@ -276,10 +290,10 @@ namespace MeerJager.Entities
             {
                 enemy.CycleWeapons(player);
             }
-            player.ReloadGuns();
+            player.ReloadWeapons();
         }
 
-
+        
 
     }
 }
