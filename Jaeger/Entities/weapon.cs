@@ -37,7 +37,7 @@ namespace MeerJager.Entities
 
             int Roll = Dice.RollPercentage();
 
-            if (Roll > _targetProfile)
+            if (_targetProfile > Roll)
             {
                 return Damage.WeightedRandom(10);
             }

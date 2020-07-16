@@ -145,8 +145,6 @@ namespace MeerJager.Entities
             if (amount > 0)
             {
                 UIScreen.DisplayLines.Add("Hit!");
-                UIScreen.DisplayLines.Add(GetDamageReport());
-
                 if (Health - amount <= 0)
                 {
                     Health = 0;
@@ -155,6 +153,7 @@ namespace MeerJager.Entities
                 {
                     Health -= amount;
                 }
+                UIScreen.DisplayLines.Add(GetDamageReport());
             }
             else
             {
