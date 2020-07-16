@@ -25,13 +25,11 @@ namespace MeerJager
                 EnemyType RandomEnemy = (EnemyType)Dice.RandomFromList(e.Frigates);
 
                 enemy.UIName = RandomEnemy.UIName +" Class "+ "Frigate";
-                enemy.Health = Dice.RandomBetweenTwo(RandomEnemy.HealthMin, RandomEnemy.HealthMax);
-                enemy.Profile = Dice.RandomBetweenTwo(RandomEnemy.ProfileMin, RandomEnemy.ProfileMax);
+                enemy.Health = RandomEnemy.Health.WeightedRandom(2);
+                enemy.Profile = RandomEnemy.Profile.WeightedRandom(2);
                 enemy.DistanceToPlayer = Dice.RandomBetweenTwo(10000, 20000);
 
             }
-
-
 
             CombatMenu.StartCombat(enemy);
             Console.ReadKey();

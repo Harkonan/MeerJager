@@ -1,8 +1,7 @@
-﻿
-Randomised Enemny
-	 - Range of classes with different possible configurations
-		- Load possiblities from json?
+﻿Weapon Systems
 
-	 - Random starting possition
+Main Battery - Only fire at surfaced or periscope depth vessels, long range
+Secondary Battery - Only fire at surfaced or periscope depth vessels, long range
+Depth Charges 
+	- Normal sub 1000m range only on submersed vessels
 
-	 - convert all distance to M

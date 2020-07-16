@@ -9,7 +9,8 @@ namespace MeerJager.Entities
 {
     public class Weapon
     {
-        public int Damage { get; set; }
+        public Range Damage { get; set; }
+
         public int ReloadRounds { get; set; }
         public int ReloadRoundsLeft { get; set; }
         public int HitPercent { get; set; }
@@ -19,10 +20,13 @@ namespace MeerJager.Entities
         public Enemy Target { get; set; }
         public WeaponStatus Status { get; set; }
         public List<Depth> FiringDepths { get; set; }
+        public List<Depth> EffectiveDepths { get; set; }
+        public Range Range { get; set; }
 
         public Weapon()
         {
             FiringDepths = new List<Depth>();
+            EffectiveDepths = new List<Depth>();
             Status = WeaponStatus.loaded;
         }
 
@@ -35,7 +39,7 @@ namespace MeerJager.Entities
 
             if (Roll > _targetProfile)
             {
-                return Damage;
+                return Damage.WeightedRandom(10);
             }
             else
             {

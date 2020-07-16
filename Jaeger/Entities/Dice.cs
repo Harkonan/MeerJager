@@ -24,5 +24,26 @@ namespace MeerJager.Entities
         {
             return R.Next(min, max);
         }
+
+        public static int UpToMax(int Max)
+        {
+            return R.Next(Max);
+        }
+
+        public static int WeightedRandomBetweenTwo(int Min, int Max, int Weight)
+        {
+            var result = WeightedRandomUpToMax(Max - Min, Weight);
+            return result + Min;
+        }
+
+        public static int WeightedRandomUpToMax(int Max, int Weight)
+        {
+            int result = 0;
+            for (int i = 0; i < Weight; i++)
+            {
+                result += Dice.UpToMax(Max) * (Max / Weight);
+            }
+            return result;
+        }
     }
 }

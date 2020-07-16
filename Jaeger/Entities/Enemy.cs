@@ -19,10 +19,8 @@ namespace MeerJager.Entities
     public class EnemyType
     {
         public string UIName { get; set; }
-        public int HealthMax { get; set; }
-        public int HealthMin { get; set; }
-        public int ProfileMin { get; set; }
-        public int ProfileMax { get; set; }
+        public Range Health { get; set; }
+        public Range Profile { get; set; }
     }
 
     public class Enemy : Vessel
@@ -43,16 +41,20 @@ namespace MeerJager.Entities
             PlayerCanSee = false;
             DistanceToPlayer = 40000;
             AccousticDetectionAbility = 0.5f;
-            Weapon Gun = new Weapon()
-            {
-                Damage = 10,
-                ReloadRounds = 1,
-                Status = WeaponStatus.loaded,
-                Type = WeaponType.MainBattery
-            };
-            Armament = new Weapon[1];
-            Armament[0] = Gun;
             Depth = Depths.GetDepths[0];
+
+            Weapon DepthCharge = new Weapon()
+            {
+                Damage = new Range(70, 120)
+            };
+            
+            Armament = new Weapon[3];
+            
+            
+
+
+            
+
         }
 
         public void CycleWeapons(Player Target)

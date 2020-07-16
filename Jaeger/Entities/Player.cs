@@ -46,7 +46,7 @@ namespace MeerJager.Entities
 
                 Weapon weapon = new Weapon()
                 {
-                    Damage = 55,
+                    Damage = new Range(40, 60),
                     Type = WeaponType.Torpedo,
                     ReloadRounds = 3,
                     HitPercent = 30,
@@ -60,7 +60,7 @@ namespace MeerJager.Entities
             Weapon BowGun = new Weapon()
             {
                 Type = WeaponType.MainBattery,
-                Damage = 10,
+                Damage = new Range(10, 20),
                 HitPercent = 80,
                 ReloadRounds = 5
             };
@@ -84,7 +84,7 @@ namespace MeerJager.Entities
                     weapon.Status = WeaponStatus.reloading;
                     ActiveTorpedos.Add(new ActiveTorpedos()
                     {
-                        Damage = weapon.Damage,
+                        Damage = weapon.Damage.WeightedRandom(10),
                         Target = weapon.Target,
                         DistanceToTarget = weapon.Target.DistanceToPlayer,
                         HitPercent = weapon.HitPercent,
