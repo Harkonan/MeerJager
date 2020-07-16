@@ -15,7 +15,7 @@ namespace MeerJager.Entities
         public int Supplies { get; set; }
         public int PoliticalCapital { get; set; }
         public List<ActiveTorpedos> ActiveTorpedos { get; set; }
-        
+
 
         public static Player GetPlayer
         {
@@ -32,8 +32,10 @@ namespace MeerJager.Entities
 
         Player()
         {
+            UIName = "Player";
             Health = 100;
             Profile = 30;
+            Noise = 30;
             Depth = Depths.GetDepths[2];
             Armament = new Weapon[5];
             for (int i = 0; i < 4; i++)
@@ -68,10 +70,10 @@ namespace MeerJager.Entities
             Torpedos = 22;
             ActiveTorpedos = new List<ActiveTorpedos>();
             AccousticDetectionAbility = 0.5f;
-            VisualDetectionAbility = 0.5f;
         }
 
-        public void ExecuteAttack(){
+        public void ExecuteAttack()
+        {
             foreach (var weapon in Armament.Where(x => x.Status == WeaponStatus.firing))
             {
                 if (weapon.Type == WeaponType.Torpedo)
@@ -87,7 +89,7 @@ namespace MeerJager.Entities
                         DistanceToTarget = weapon.Target.DistanceToPlayer,
                         HitPercent = weapon.HitPercent,
                         Speed = weapon.Speed.Value,
-                        UIName = "Active Torpedo "+ (ActiveTorpedos.Count()+1)
+                        UIName = "Active Torpedo " + (ActiveTorpedos.Count() + 1)
                     });
                 }
             }
@@ -113,14 +115,6 @@ namespace MeerJager.Entities
             }
         }
 
-        public double GetProfile(double _enemyDetectionAbility, int _enemyDistance)
-        {
-            double playerProfileAfterDepth = Profile * Depth.ChanceToSeeModifier;
-            double baseDetectionChancePerHundredMeters = _enemyDetectionAbility * playerProfileAfterDepth; //players depth profile modified by the enemy detection ability
-            double hundredMetersToPlayer = _enemyDistance / 100;
-            double finalDetectionChance = (baseDetectionChancePerHundredMeters * 10) * Math.Floor(hundredMetersToPlayer);
-            return finalDetectionChance;
-        }
 
         public string GetDamageReport()
         {
@@ -144,7 +138,7 @@ namespace MeerJager.Entities
             {
                 return "Our hull is untouched";
             }
-        } 
+        }
 
         public void SetDamage(int amount)
         {
@@ -178,5 +172,5 @@ namespace MeerJager.Entities
 
     }
 
-    
+
 }

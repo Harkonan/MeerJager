@@ -15,15 +15,13 @@ namespace MeerJager.Entities
 
         public static void StartCombat(Enemy _enemy)
         {
+            UIScreen.DisplayLines.Add("Captain, acoustics has picked up something. Might be nothing though.");
             enemy = _enemy;
             while (player.Health > 0 && _enemy.Health > 0)
             {
                 CombatRound();
-                if (enemy.PlayerCanSee || enemy.CanSeePlayer)
-                {
-                    GetPlayerChoice();
-                }
-                else
+                GetPlayerChoice();
+                if (!enemy.PlayerCanSee)
                 {
                     enemy.CloseDistance();
                 }
@@ -42,30 +40,53 @@ namespace MeerJager.Entities
         {
             int OptionNumber = 1;
             var menuOptions = new List<MenuOption>();
-            var closeDistance = new MenuOption()
+            if (enemy.PlayerCanSee)
             {
-                Display = "Close Distance",
-                Key = 'C',
-                Id = OptionNumber++,
-                Action = enemy.CloseDistance
-            };
-            menuOptions.Add(closeDistance);
-            var openDistance = new MenuOption()
+                var closeDistance = new MenuOption()
+                {
+                    Display = "Close Distance",
+                    Key = 'C',
+                    Id = OptionNumber++,
+                    Action = enemy.CloseDistance
+                };
+                menuOptions.Add(closeDistance);
+                var openDistance = new MenuOption()
+                {
+                    Display = "Open Distance",
+                    Key = 'O',
+                    Id = OptionNumber++,
+                    Action = enemy.OpenDistance
+                };
+                menuOptions.Add(openDistance);
+                var holdPosition = new MenuOption()
+                {
+                    Display = "Hold Possition",
+                    Key = 'H',
+                    Id = OptionNumber++,
+                    Action = () => { }
+                };
+                menuOptions.Add(holdPosition);
+                var Weapons = new MenuOption()
+                {
+                    Display = "Weapons Systems",
+                    Key = 'W',
+                    Id = OptionNumber++,
+                    Action = GetPlayerWeaponChoice
+                };
+                menuOptions.Add(Weapons);
+            }
+            else
             {
-                Display = "Open Distance",
-                Key = 'O',
-                Id = OptionNumber++,
-                Action = enemy.OpenDistance
-            };
-            menuOptions.Add(openDistance);
-            var holdPosition = new MenuOption()
-            {
-                Display = "Hold Possition",
-                Key = 'H',
-                Id = OptionNumber++,
-                Action = () => { }
-            };
-            menuOptions.Add(holdPosition);
+                var closeDistance = new MenuOption()
+                {
+                    Display = "Continue on Course",
+                    Key = 'C',
+                    Id = OptionNumber++,
+                    Action = enemy.CloseDistance
+                };
+                menuOptions.Add(closeDistance);
+            }
+
 
             var depths = Depths.GetDepths;
             if (depths.Any(x => x.DepthOrder == player.Depth.DepthOrder + 1))
@@ -91,16 +112,6 @@ namespace MeerJager.Entities
                 };
                 menuOptions.Add(lowerDepth);
             }
-
-            var Weapons = new MenuOption()
-            {
-                Display = "Weapons Systems",
-                Key = 'W',
-                Id = OptionNumber++,
-                Action = GetPlayerWeaponChoice
-            };
-            menuOptions.Add(Weapons);
-
             var sitRep = new MenuOption()
             {
                 Display = "Situation Report",
@@ -171,13 +182,14 @@ namespace MeerJager.Entities
                                 };
                                 menuOptions.Add(loaded);
                             }
-                            else {
-                                
+                            else
+                            {
+
 
                                 UIScreen.DisplayLines.Add(string.Format("{1} can only be fired at {0} depth", weapon.ListValidFirindDeapths(), weapon.UIName));
                                 OptionNumber++;
                             }
-                            
+
                             break;
                         default:
                             break;
@@ -259,59 +271,15 @@ namespace MeerJager.Entities
             player.ActiveTorpedos.RemoveAll(x => x.Finished);
 
 
-            if (!enemy.PlayerCanSee)
-            {
-                //TODO: Make it so enemy can loose site of you
-                PlayerSearching();
-            }
-            if (!enemy.CanSeePlayer)
-            {
-                //TODO: make it so you can loose site of the enemy
-                EnemySearching();
-            }
-            else
+            enemy.CheckDetection(player);
+            if (enemy.CanSeePlayer)
             {
                 enemy.CycleWeapons(player);
             }
             player.ReloadGuns();
         }
 
-        private static void PlayerSearching()
-        {
-            if (enemy.DistanceToPlayer < 100)
-            {
-                enemy.Spotted();
-            }
-            else
-            {
-                double profile = enemy.GetProfile(player.DetectionAbility);
-                int roll = Dice.RollPercentage();
-                if (profile > roll)
-                {
-                    enemy.Spotted();
-                }
-            }
-        }
 
-        public static void EnemySearching()
-        {
-            // if the distance between ships is > 100 auto detect
-            if (enemy.DistanceToPlayer < 100)
-            {
-                enemy.Engage();
-                enemy.Spotted();
-            }
-            else
-            {
-                double profile = player.GetProfile(enemy.DetectionAbility, enemy.DistanceToPlayer);
-                int roll = Dice.RollPercentage();
-                if (profile > roll)
-                {
-                    enemy.Engage();
-                    enemy.Spotted();
-                }
-            }
-        }
 
     }
 }

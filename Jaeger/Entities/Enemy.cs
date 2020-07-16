@@ -38,11 +38,11 @@ namespace MeerJager.Entities
             UIName = "Dover Class frigate";
             Health = 100;
             Profile = 50;
+            Noise = 60;
             CanSeePlayer = false;
             PlayerCanSee = false;
             DistanceToPlayer = 40000;
             AccousticDetectionAbility = 0.5f;
-            VisualDetectionAbility = 0.5f;
             Weapon Gun = new Weapon()
             {
                 Damage = 10,
@@ -60,11 +60,17 @@ namespace MeerJager.Entities
             var loadedGuns = Armament.Where(x => x.Status == WeaponStatus.loaded);
             foreach (var gun in loadedGuns)
             {
-                //double profile = Target.GetProfile(DetectionAbility, DistanceToPlayer);
-                //int damage = gun.FireWeapon(profile);
-                //UIScreen.DisplayLines.Add(String.Format("{0} has fired!", UIName));
-                //Target.SetDamage(damage);
-
+                double profile = Math.Max(AcousticalDetectionCalculation(this), VisualDetectionCalculation(this));
+                int damage = gun.FireWeapon(profile);
+                if (PlayerCanSee)
+                {
+                    UIScreen.DisplayLines.Add(String.Format("{0} has fired!", UIName));
+                }
+                else
+                {
+                    UIScreen.DisplayLines.Add(String.Format("Incoming fire from unknown vessel!"));
+                }
+                Target.SetDamage(damage);
             }
 
             ReloadGuns();
@@ -99,21 +105,28 @@ namespace MeerJager.Entities
 
         public void Engage()
         {
-            CanSeePlayer = true;
-            UIScreen.DisplayLines.Add(string.Format("Captain, {0} is moving to engage!", UIName));
+            if (PlayerCanSee && !CanSeePlayer)
+            {
+                CanSeePlayer = true;
+                UIScreen.DisplayLines.Add(string.Format("Captain, {0} is moving to engage!", UIName));
+            }
+            
         }
         public void Disengage()
         {
-            CanSeePlayer = false;
-            UIScreen.DisplayLines.Add(string.Format("Captain, {0} has lost us!", UIName));
+            if (PlayerCanSee && CanSeePlayer)
+            {
+                CanSeePlayer = false;
+                UIScreen.DisplayLines.Add(string.Format("Captain, {0} has lost us!", UIName));
+            }
         }
 
-        public void Spotted()
+        public void Spotted(string DetectionMethod)
         {
             if (!PlayerCanSee)
             {
                 PlayerCanSee = true;
-                UIScreen.DisplayLines.Add(string.Format("{0} Spotted at {1}m!", UIName, DistanceToPlayer));
+                UIScreen.DisplayLines.Add(string.Format("{0} Spotted on {2} at {1}m!", UIName, DistanceToPlayer, DetectionMethod));
             }
         }
         public void Unspotted()
@@ -135,37 +148,56 @@ namespace MeerJager.Entities
 
         public string GetDamageReport()
         {
-            if (Health <= 0)
+            if (PlayerCanSee)
             {
-                return string.Format("{0}'s is sinking!", UIName);
-            }
-            if (Health <= 20)
-            {
-                return string.Format("{0}'s hull is critically compormised", UIName);
-            }
-            else if (20 < Health && Health <= 60)
-            {
-                return string.Format("{0}'s hull is heavily damaged", UIName);
-            }
-            else if (20 < Health && Health <= 60)
-            {
-                return string.Format("{0}'s hull is damaged", UIName);
-            }
-            else if (60 < Health && Health <= 99)
-            {
-                return string.Format("{0}'s hull is slightly damaged", UIName);
+                if (Health <= 0)
+                {
+                    return string.Format("{0}'s is sinking!", UIName);
+                }
+                if (Health <= 20)
+                {
+                    return string.Format("{0}'s hull is critically compormised", UIName);
+                }
+                else if (20 < Health && Health <= 60)
+                {
+                    return string.Format("{0}'s hull is heavily damaged", UIName);
+                }
+                else if (20 < Health && Health <= 60)
+                {
+                    return string.Format("{0}'s hull is damaged", UIName);
+                }
+                else if (60 < Health && Health <= 99)
+                {
+                    return string.Format("{0}'s hull is slightly damaged", UIName);
+                }
+                else
+                {
+                    return string.Format("{0}'s hull is untouched", UIName);
+                }
             }
             else
             {
-                return string.Format("{0}'s hull is untouched", UIName);
+                if (Health <= 0)
+                {
+                    return string.Format("Detecting a sinking vessel!");
+                }
+                return "";
             }
+            
         }
 
         public void SetDamage(int amount, string WeaponSystem)
         {
             if (amount > 0)
             {
-                UIScreen.DisplayLines.Add(string.Format("{0} has hit {1}!", WeaponSystem, UIName));
+                if (PlayerCanSee)
+                {
+                    UIScreen.DisplayLines.Add(string.Format("{0} has hit {1}!", WeaponSystem, UIName));
+                }
+                else
+                {
+                    UIScreen.DisplayLines.Add(string.Format("{0} has detonated!", WeaponSystem));
+                }
                 UIScreen.DisplayLines.Add(GetDamageReport());
 
                 if (Health - amount <= 0)
@@ -183,28 +215,12 @@ namespace MeerJager.Entities
             }
         }
 
-        public double GetProfile(double _playerDetectionAbility)
-        {
-            double ProfileAfterDepth = (Profile / 10) * Depth.ChanceToSeeModifier;
-            double baseDetectionChancePerHundredMeters = _playerDetectionAbility * ProfileAfterDepth; //players depth profile modified by the enemy detection ability
-            double hundredMetersToPlayer = DistanceToPlayer / 100;
-            double finalDetectionChance = baseDetectionChancePerHundredMeters * Math.Floor(hundredMetersToPlayer);
-            return finalDetectionChance;
-        }
 
         public void CheckDetection(Player player)
         {
             //Can the Enemy See the player
             //Visual Check
-            var BaseProfile = Profile * Depth.ChanceToSeeModifier;
-            var VisualDetectionChance = BaseProfile + (BaseProfile * ((10000 * DistanceToPlayer) / 10000));
-
-            var AcousticalDetectionChance = Noise * Math.Pow(1.2 / (DistanceToPlayer / 1000), 0.25) * Depth.ChanceToHearModifer;
-
-            int VisualRoll = Dice.RollPercentage();
-            int AcousticalRoll = Dice.RollPercentage();
-
-            if (VisualDetectionChance > VisualRoll || AcousticalDetectionChance > AcousticalRoll )
+            if (VisualDetectionRoll(this) || AcousticalDetectionRoll(this))
             {
                 Engage();
             }
@@ -215,22 +231,51 @@ namespace MeerJager.Entities
 
             //Can the Player See this enemy
             //Visual Check
-            var PlayerBaseProfile = player.Profile * player.Depth.ChanceToSeeModifier;
-            var PlayerVisualDetectionChance = PlayerBaseProfile + (PlayerBaseProfile * ((10000 * DistanceToPlayer) / 10000));
-
-            var PlayerAcousticalDetectionChance = player.Noise * Math.Pow(1.2 / (DistanceToPlayer / 1000), 0.25) * player.Depth.ChanceToHearModifer;
-
-            int PlayerVisualRoll = Dice.RollPercentage();
-            int PlayerAcousticalRoll = Dice.RollPercentage();
-
-            if (PlayerVisualDetectionChance > PlayerVisualRoll || PlayerAcousticalDetectionChance > PlayerAcousticalRoll)
+            var VisualCheck = VisualDetectionRoll(player);
+            var AcousticalCheck = AcousticalDetectionRoll(player);
+            if ( VisualCheck || AcousticalCheck)
             {
-                Spotted();
+                if (VisualCheck)
+                {
+                    Spotted("Periscope");
+                }
+                else
+                {
+                    Spotted("Sonar");
+                }
+                
             }
             else
             {
                 Unspotted();
             }
+        }
+
+        private double VisualDetectionCalculation(Vessel VesselDetecting)
+        {
+            var BaseProfile = VesselDetecting.Profile * VesselDetecting.Depth.ChanceToSeeModifier;
+            return BaseProfile + (BaseProfile * ((10000 - DistanceToPlayer) / 10000));
+        }
+        private bool VisualDetectionRoll(Vessel VesselDetecting)
+        {
+            var VisualDetectionChance = VisualDetectionCalculation(VesselDetecting);
+            int VisualRoll = Dice.RollPercentage();
+            //UIScreen.DisplayLines.Add(string.Format("{0} has a {1} and rolled {2}", VesselDetecting.UIName, VisualDetectionChance, VisualRoll));
+            return (VisualDetectionChance > VisualRoll);
+
+        }
+
+
+        private double AcousticalDetectionCalculation(Vessel VesselDetecting)
+        {
+            return VesselDetecting.Noise * Math.Pow(1.2 / (DistanceToPlayer / 1000), 0.25) * VesselDetecting.Depth.ChanceToHearModifer;
+        }
+        private bool AcousticalDetectionRoll(Vessel VesselDetecting)
+        {
+            var AcousticalDetectionChance = AcousticalDetectionCalculation(VesselDetecting);
+            int AcousticalRoll = Dice.RollPercentage();
+            //UIScreen.DisplayLines.Add(string.Format("{0} has a {1} and rolled {2}", VesselDetecting.UIName, AcousticalDetectionChance, AcousticalRoll));
+            return (AcousticalDetectionChance > AcousticalRoll);
         }
 
     }

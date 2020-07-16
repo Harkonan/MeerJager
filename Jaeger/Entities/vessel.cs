@@ -14,7 +14,6 @@ namespace MeerJager.Entities
         public string UIName { get; set; }
         public Depth Depth { get; set; }
         public int BaseRange { get; set; }
-
         public int Profile { get; set; } //profile is how easy it is to see the vessel
         
         public double AccousticDetectionAbility { get; set; }
