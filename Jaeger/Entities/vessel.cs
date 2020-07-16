@@ -17,7 +17,7 @@ namespace MeerJager.Entities
         public int Profile { get; set; } //profile is how easy it is to see the vessel
         
         public double AccousticDetectionAbility { get; set; }
-        public int Noise { get; set; } //Noise is the volume of the vessel for detection Purposes
+        public int Noise { get; set; } //Noise is the volume of the vessel for detection Purposes ~60 for a submarine, ~90 for a frigate ~250 for a dreadnaught seems balanced at optimal torp range
 
 
 

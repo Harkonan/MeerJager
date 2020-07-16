@@ -34,8 +34,8 @@ namespace MeerJager.Entities
         {
             UIName = "Player";
             Health = 100;
-            Profile = 30;
-            Noise = 30;
+            Profile = 60;
+            Noise = 60;
             Depth = Depths.GetDepths[2];
             Armament = new Weapon[5];
             for (int i = 0; i < 4; i++)

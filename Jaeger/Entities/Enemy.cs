@@ -36,7 +36,7 @@ namespace MeerJager.Entities
             UIName = "Dover Class frigate";
             Health = 100;
             Profile = 50;
-            Noise = 60;
+            Noise = 90;
             CanSeePlayer = false;
             PlayerCanSee = false;
             DistanceToPlayer = 40000;
@@ -57,11 +57,11 @@ namespace MeerJager.Entities
             Armament = new Weapon[1];
             Armament[0] = DepthCharge;
 
-            
-            
 
 
-            
+
+
+
 
         }
 
@@ -120,7 +120,7 @@ namespace MeerJager.Entities
                 CanSeePlayer = true;
                 UIScreen.DisplayLines.Add(string.Format("Captain, {0} is moving to engage!", UIName));
             }
-            
+
         }
         public void Disengage()
         {
@@ -193,7 +193,7 @@ namespace MeerJager.Entities
                 }
                 return "";
             }
-            
+
         }
 
         public void SetDamage(int amount, string WeaponSystem)
@@ -247,7 +247,7 @@ namespace MeerJager.Entities
             //Visual Check
             var PlayerVisualCheck = VisualDetectionRoll(player, this);
             var PlayerAcousticalCheck = AcousticalDetectionRoll(player, this);
-            if ( PlayerVisualCheck || PlayerAcousticalCheck)
+            if (PlayerVisualCheck || PlayerAcousticalCheck)
             {
                 if (PlayerVisualCheck)
                 {
@@ -257,7 +257,7 @@ namespace MeerJager.Entities
                 {
                     Spotted("Sonar");
                 }
-                
+
             }
             else
             {
@@ -286,10 +286,13 @@ namespace MeerJager.Entities
 
         private double AcousticalDetectionCalculation(Vessel SeekingVessel, Vessel HidingVessel)
         {
-            double DistanceMod = (double)DistanceToPlayer / (double)1000;
-            double DistanceDevided = 1.2 / DistanceMod;
-            double DistancePower = Math.Pow(DistanceDevided, 0.25);
-            double Result = HidingVessel.Noise * DistancePower * SeekingVessel.AccousticDetectionAbility * HidingVessel.Depth.ChanceToHearModifer ;
+            double DistanceMod = (double)DistanceToPlayer / (double)15000;
+
+            double DistancePower = Math.Pow(DistanceMod, 0.33);
+
+            double DistanceMultiplier = 0.33 / DistancePower;
+
+            double Result = HidingVessel.Noise * DistanceMultiplier * SeekingVessel.AccousticDetectionAbility * HidingVessel.Depth.ChanceToHearModifer;
 
             return Result;
         }
