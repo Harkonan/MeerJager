@@ -41,7 +41,7 @@ namespace MeerJager.Entities
             int result = 0;
             for (int i = 0; i < Weight; i++)
             {
-                result += Dice.UpToMax(Max) * (Max / Weight);
+                result += Dice.UpToMax(Max) / Weight;
             }
             return result;
         }

@@ -40,12 +40,12 @@ namespace MeerJager.Entities
             CanSeePlayer = false;
             PlayerCanSee = false;
             DistanceToPlayer = 40000;
-            AccousticDetectionAbility = 0.5f;
+            AccousticDetectionAbility = 1.0f;
             Depth = Depths.GetDepths[0];
 
             Weapon DepthCharge = new Weapon()
             {
-                Damage = new Range(70, 120),
+                Damage = new Range(0, 1),
                 EffectiveDepths = Depths.GetDepths.Where(x => x.DepthOrder < 1).ToList(),
                 HitPercent = 90,
                 Range = new Range(0, 1000),
@@ -70,7 +70,7 @@ namespace MeerJager.Entities
             var LoadedArmament = Armament.Where(x => x.Status == WeaponStatus.loaded);
             foreach (var Armament in LoadedArmament)
             {
-                double profile = Math.Max(AcousticalDetectionCalculation(this), VisualDetectionCalculation(this));
+                double profile = Math.Max(AcousticalDetectionCalculation(this, Target), VisualDetectionCalculation(this, Target));
                 int damage = Armament.FireWeapon(profile);
                 if (PlayerCanSee)
                 {
@@ -228,9 +228,13 @@ namespace MeerJager.Entities
 
         public void CheckDetection(Player player)
         {
+            UIScreen.DisplayLines.Add(string.Format("Current Range {0}", DistanceToPlayer));
+
             //Can the Enemy See the player
             //Visual Check
-            if (VisualDetectionRoll(this) || AcousticalDetectionRoll(this))
+            var EnemyVisualCheck = VisualDetectionRoll(this, player);
+            var EnemyAcousticalCheck = AcousticalDetectionRoll(this, player);
+            if (EnemyVisualCheck || EnemyAcousticalCheck)
             {
                 Engage();
             }
@@ -241,11 +245,11 @@ namespace MeerJager.Entities
 
             //Can the Player See this enemy
             //Visual Check
-            var VisualCheck = VisualDetectionRoll(player);
-            var AcousticalCheck = AcousticalDetectionRoll(player);
-            if ( VisualCheck || AcousticalCheck)
+            var PlayerVisualCheck = VisualDetectionRoll(player, this);
+            var PlayerAcousticalCheck = AcousticalDetectionRoll(player, this);
+            if ( PlayerVisualCheck || PlayerAcousticalCheck)
             {
-                if (VisualCheck)
+                if (PlayerVisualCheck)
                 {
                     Spotted("Periscope");
                 }
@@ -261,30 +265,39 @@ namespace MeerJager.Entities
             }
         }
 
-        private double VisualDetectionCalculation(Vessel VesselDetecting)
+        private double VisualDetectionCalculation(Vessel SeekingVessel, Vessel HidingVessel)
         {
-            var BaseProfile = VesselDetecting.Profile * VesselDetecting.Depth.ChanceToSeeModifier;
-            return BaseProfile + (BaseProfile * ((10000 - DistanceToPlayer) / 10000));
+            double BaseProfile = HidingVessel.Profile * SeekingVessel.Depth.ChanceToSeeModifier;
+            double DistanceVariance = (10000 - DistanceToPlayer);
+            double DistanceFraction = DistanceVariance / 10000;
+            double DistanceBase = DistanceFraction * BaseProfile;
+            double Result = BaseProfile + DistanceBase;
+            return Result;
         }
-        private bool VisualDetectionRoll(Vessel VesselDetecting)
+        private bool VisualDetectionRoll(Vessel SeekingVessel, Vessel HidingVessel)
         {
-            var VisualDetectionChance = VisualDetectionCalculation(VesselDetecting);
+            var VisualDetectionChance = VisualDetectionCalculation(SeekingVessel, HidingVessel);
             int VisualRoll = Dice.RollPercentage();
-            //UIScreen.DisplayLines.Add(string.Format("{0} has a {1} and rolled {2}", VesselDetecting.UIName, VisualDetectionChance, VisualRoll));
+            UIScreen.DisplayLines.Add(string.Format("{0} has a {1} detecting chance on vessel using visual and rolled {2}", SeekingVessel.UIName, VisualDetectionChance, VisualRoll));
             return (VisualDetectionChance > VisualRoll);
 
         }
 
 
-        private double AcousticalDetectionCalculation(Vessel VesselDetecting)
+        private double AcousticalDetectionCalculation(Vessel SeekingVessel, Vessel HidingVessel)
         {
-            return VesselDetecting.Noise * Math.Pow(1.2 / (DistanceToPlayer / 1000), 0.25) * VesselDetecting.Depth.ChanceToHearModifer;
+            double DistanceMod = (double)DistanceToPlayer / (double)1000;
+            double DistanceDevided = 1.2 / DistanceMod;
+            double DistancePower = Math.Pow(DistanceDevided, 0.25);
+            double Result = HidingVessel.Noise * DistancePower * SeekingVessel.AccousticDetectionAbility * HidingVessel.Depth.ChanceToHearModifer ;
+
+            return Result;
         }
-        private bool AcousticalDetectionRoll(Vessel VesselDetecting)
+        private bool AcousticalDetectionRoll(Vessel SeekingVessel, Vessel HidingVessel)
         {
-            var AcousticalDetectionChance = AcousticalDetectionCalculation(VesselDetecting);
+            var AcousticalDetectionChance = AcousticalDetectionCalculation(SeekingVessel, HidingVessel);
             int AcousticalRoll = Dice.RollPercentage();
-            //UIScreen.DisplayLines.Add(string.Format("{0} has a {1} and rolled {2}", VesselDetecting.UIName, AcousticalDetectionChance, AcousticalRoll));
+            UIScreen.DisplayLines.Add(string.Format("{0} has a {1} detecting chance on vessel using acoustics and rolled {2}", SeekingVessel.UIName, AcousticalDetectionChance, AcousticalRoll));
             return (AcousticalDetectionChance > AcousticalRoll);
         }
 

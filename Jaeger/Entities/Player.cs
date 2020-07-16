@@ -69,7 +69,7 @@ namespace MeerJager.Entities
             PoliticalCapital = 10;
             Torpedos = 22;
             ActiveTorpedos = new List<ActiveTorpedos>();
-            AccousticDetectionAbility = 0.5f;
+            AccousticDetectionAbility = 1.0f;
         }
 
         public void ExecuteAttack()
