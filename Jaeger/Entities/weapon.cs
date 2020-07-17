@@ -52,7 +52,7 @@ namespace MeerJager.Entities
         {
             if (Status == WeaponStatus.reloading)
             {
-                if (ReloadRoundsLeft > 0)
+                if (ReloadRoundsLeft > 1)
                 {
                     ReloadRoundsLeft--;
                     Status = WeaponStatus.reloading;
