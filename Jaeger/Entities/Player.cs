@@ -113,7 +113,9 @@ namespace MeerJager.Entities
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder + 1).FirstOrDefault();
                 UIScreen.DisplayLines.Add(String.Format("Depth set to {0}, aye", Depth.DepthName));
+                ChangeSpeed(0);
             }
+
         }
 
         public void LowerDepth()

@@ -53,7 +53,7 @@ namespace MeerJager.Entities
             Weapon ForeBattery = new Weapon()
             {
                 Damage = new Range(20, 50),
-                EffectiveDepths = Depths.GetDepths[0..1].ToList(),
+                EffectiveDepths = Depths.GetDepths[0..2].ToList(),
                 HitPercent = 90,
                 Range = new Range(500, 19850),
                 ReloadRounds = 4,
@@ -75,12 +75,6 @@ namespace MeerJager.Entities
             Armament = new Weapon[2];
             Armament[0] = DepthCharge;
             Armament[1] = ForeBattery;
-
-
-
-
-
-
         }
 
         public void CycleWeapons(Player Target)

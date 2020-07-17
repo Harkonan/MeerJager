@@ -260,13 +260,14 @@ namespace MeerJager.Entities
             }
             UIScreen.DisplayLines.Add(String.Format("We have {0} torpedos in the stores with {1} loaded into tubes", player.Torpedos, player.Armament.Where(x => x.Type == WeaponType.Torpedo && x.Status == WeaponStatus.loaded).Count()));
             UIScreen.DisplayLines.Add(String.Format("Currently we are at {0} depth", player.Depth.DepthName));
+            UIScreen.DisplayLines.Add(String.Format("Helm is set at {0} speed", player.Speed));
             UIScreen.DisplayLines.Add(player.GetDamageReport());
             if (player.ActiveTorpedos.Count > 0)
             {
-                UIScreen.DisplayLines.Add(string.Format("We currently have {0} Torpedos in the water", player.ActiveTorpedos.Count));
+                UIScreen.DisplayLines.Add(string.Format("We have {0} Torpedos in the water", player.ActiveTorpedos.Count));
                 foreach (var ActiveTorpedo in player.ActiveTorpedos)
                 {
-                    UIScreen.DisplayLines.Add(string.Format("{0} is {1}m from the {2}", ActiveTorpedo.UIName, ActiveTorpedo.DistanceToTarget, ActiveTorpedo.Target.UIName));
+                    UIScreen.DisplayLines.Add(string.Format("   {0} is {1}m from the {2}", ActiveTorpedo.UIName, ActiveTorpedo.DistanceToTarget, ActiveTorpedo.Target.UIName));
                 }
             }
 
