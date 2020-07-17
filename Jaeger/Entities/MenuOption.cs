@@ -12,6 +12,14 @@ namespace MeerJager.Entities
         public char? Key { get; set; }
         public string Display { get; set; }
         public Action Action { get; set; }
+        public ConsoleColor Forground { get; set; }
+        public ConsoleColor Background { get; set; }
+
+        public MenuOption()
+        {
+            Forground = ConsoleColor.White;
+            Background = ConsoleColor.Black;
+        }
     }
 
     

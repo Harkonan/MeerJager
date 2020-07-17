@@ -53,6 +53,7 @@ namespace MeerJager.Entities
                 Display = "Continue on Course",
                 Key = 'C',
                 Id = OptionNumber++,
+                Forground = ConsoleColor.Red,
                 Action = () =>
                 {
                     enemy.ChangeDistance(-player.Speed);
@@ -94,6 +95,7 @@ namespace MeerJager.Entities
                     Display = "Raise Depth to " + depths.Where(x => x.DepthOrder == player.Depth.DepthOrder + 1).FirstOrDefault().DepthName,
                     Key = 'R',
                     Id = OptionNumber++,
+                    Forground = ConsoleColor.Red,
                     Action = player.RaiseDepth
                 };
                 menuOptions.Add(raiseDepth);
@@ -106,6 +108,7 @@ namespace MeerJager.Entities
                     Display = "Lower Depth to " + depths.Where(x => x.DepthOrder == player.Depth.DepthOrder - 1).FirstOrDefault().DepthName,
                     Key = 'L',
                     Id = OptionNumber++,
+                    Forground = ConsoleColor.Red,
                     Action = player.LowerDepth
                 };
                 menuOptions.Add(lowerDepth);
@@ -220,6 +223,7 @@ namespace MeerJager.Entities
                     Display = "Execute Attack",
                     Key = 'E',
                     Id = OptionNumber++,
+                    Forground = ConsoleColor.Red,
                     Action = player.ExecuteAttack
                 };
                 menuOptions.Add(back);

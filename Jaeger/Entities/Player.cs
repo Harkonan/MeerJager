@@ -62,7 +62,7 @@ namespace MeerJager.Entities
             }
             Weapon BowGun = new Weapon()
             {
-                Type = WeaponType.MainBattery,
+                Type = WeaponType.Main_Battery,
                 Damage = new Range(10, 20),
                 HitPercent = 80,
                 ReloadRounds = 1,

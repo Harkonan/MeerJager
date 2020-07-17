@@ -45,7 +45,10 @@ namespace Jaeger.Entities
                 WriteLine();
                 foreach (var option in Menu.OrderBy(x => x.Id))
                 {
+                    Console.ForegroundColor = option.Forground;
+                    Console.BackgroundColor = option.Background;
                     WriteLine(string.Format("{0}. {1} [{2}]", option.Id, option.Display, option.Key));
+                    Console.ResetColor();
                 }
             }
 
