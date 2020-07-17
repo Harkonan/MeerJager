@@ -57,7 +57,7 @@ namespace MeerJager.Entities
                 HitPercent = 90,
                 Range = new Range(500, 19850),
                 ReloadRounds = 4,
-                Type = WeaponType.MainBattery,
+                Type = WeaponType.Main_Battery,
                 UIName = "QF 4-inch Mark XVI fore-mounted Battery"
             };
 
@@ -68,7 +68,7 @@ namespace MeerJager.Entities
                 HitPercent = 90,
                 Range = new Range(0, 1000),
                 ReloadRounds = 2,
-                Type = WeaponType.DepthCharge,
+                Type = WeaponType.Depth_Charge,
                 UIName = "Hedgehog Depth Charge"
             };
 
@@ -90,7 +90,7 @@ namespace MeerJager.Entities
                 }
                 else
                 {
-                    UIScreen.DisplayLines.Add(String.Format("Incoming {0} fire from unknown vessel!", Armament.Type.ToString()));
+                    UIScreen.DisplayLines.Add(String.Format("Incoming {0} fire from unknown vessel!", Armament.Type.ToString().Replace('_', ' ')));
                 }
                 Armament.Status = WeaponStatus.reloading;
                 Target.SetDamage(damage);

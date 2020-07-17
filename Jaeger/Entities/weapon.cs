@@ -96,7 +96,7 @@ namespace MeerJager.Entities
 
 
 
-    public enum WeaponType { MainBattery, Torpedo, SecondaryBattery, DepthCharge }
+    public enum WeaponType { Main_Battery, Torpedo, Secondary_Battery, Depth_Charge }
     public enum WeaponStatus { firing, reloading, empty, loaded}
 
 }
