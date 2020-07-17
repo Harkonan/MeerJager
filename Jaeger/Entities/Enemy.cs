@@ -26,7 +26,9 @@ namespace MeerJager.Entities
     public class Enemy : Vessel
     {
         public Boolean CanSeePlayer { get; set; }
+        public AquisitionBonus AquisitionBonus { get; set; }
         public Boolean PlayerCanSee { get; set; }
+        public AquisitionBonus PlayerAquisitionBonus { get; set; }
         public int DistanceToPlayer { get; set; } //in meters
 
 
@@ -43,7 +45,21 @@ namespace MeerJager.Entities
             PlayerCanSee = false;
             DistanceToPlayer = 40000;
             AccousticDetectionAbility = 1.0f;
+            AquisitionBonus = new AquisitionBonus();
+            PlayerAquisitionBonus = new AquisitionBonus();
+
             Depth = Depths.GetDepths[0];
+
+            Weapon ForeBattery = new Weapon()
+            {
+                Damage = new Range(20, 50),
+                EffectiveDepths = Depths.GetDepths[0..1].ToList(),
+                HitPercent = 90,
+                Range = new Range(500, 19850),
+                ReloadRounds = 4,
+                Type = WeaponType.MainBattery,
+                UIName = "QF 4-inch Mark XVI fore-mounted Battery"
+            };
 
             Weapon DepthCharge = new Weapon()
             {
@@ -56,9 +72,9 @@ namespace MeerJager.Entities
                 UIName = "Hedgehog Depth Charge"
             };
 
-            Armament = new Weapon[1];
+            Armament = new Weapon[2];
             Armament[0] = DepthCharge;
-
+            Armament[1] = ForeBattery;
 
 
 
@@ -120,6 +136,7 @@ namespace MeerJager.Entities
             if (PlayerCanSee && !CanSeePlayer)
             {
                 CanSeePlayer = true;
+                AquisitionBonus.AddAquisitionBonus();
                 UIScreen.DisplayLines.Add(string.Format("Captain, {0} is moving to engage!", UIName));
             }
 
@@ -138,6 +155,7 @@ namespace MeerJager.Entities
             if (!PlayerCanSee)
             {
                 PlayerCanSee = true;
+                PlayerAquisitionBonus.AddAquisitionBonus();
                 UIScreen.DisplayLines.Add(string.Format("{0} Spotted on {2} at {1}m!", UIName, DistanceToPlayer, DetectionMethod));
             }
         }
@@ -234,8 +252,8 @@ namespace MeerJager.Entities
 
             //Can the Enemy See the player
             //Visual Check
-            var EnemyVisualCheck = VisualDetectionRoll(this, player);
-            var EnemyAcousticalCheck = AcousticalDetectionRoll(this, player);
+            var EnemyVisualCheck = VisualDetectionRoll(this, player, PlayerAquisitionBonus.CurrentAquisitionBonus);
+            var EnemyAcousticalCheck = AcousticalDetectionRoll(this, player, PlayerAquisitionBonus.CurrentAquisitionBonus);
             if (EnemyVisualCheck || EnemyAcousticalCheck)
             {
                 Engage();
@@ -247,8 +265,8 @@ namespace MeerJager.Entities
 
             //Can the Player See this enemy
             //Visual Check
-            var PlayerVisualCheck = VisualDetectionRoll(player, this);
-            var PlayerAcousticalCheck = AcousticalDetectionRoll(player, this);
+            var PlayerVisualCheck = VisualDetectionRoll(player, this, AquisitionBonus.CurrentAquisitionBonus);
+            var PlayerAcousticalCheck = AcousticalDetectionRoll(player, this, AquisitionBonus.CurrentAquisitionBonus);
             if (PlayerVisualCheck || PlayerAcousticalCheck)
             {
                 if (PlayerVisualCheck)
@@ -281,10 +299,10 @@ namespace MeerJager.Entities
             double Result = BaseProfile + DistanceBase;
             return Result;
         }
-        private bool VisualDetectionRoll(Vessel SeekingVessel, Vessel HidingVessel)
+        private bool VisualDetectionRoll(Vessel SeekingVessel, Vessel HidingVessel, double AquisitionBonus)
         {
             var VisualDetectionChance = VisualDetectionCalculation(SeekingVessel, HidingVessel);
-            int VisualRoll = Dice.RollPercentage();
+            double VisualRoll = Dice.RollPercentage() * AquisitionBonus;
             //UIScreen.DisplayLines.Add(string.Format("{0} has a {1} detecting chance on vessel using visual and rolled {2}", SeekingVessel.UIName, VisualDetectionChance, VisualRoll));
             return (VisualDetectionChance > VisualRoll);
 
@@ -303,10 +321,10 @@ namespace MeerJager.Entities
 
             return Result;
         }
-        private bool AcousticalDetectionRoll(Vessel SeekingVessel, Vessel HidingVessel)
+        private bool AcousticalDetectionRoll(Vessel SeekingVessel, Vessel HidingVessel, double AquisitionBonus)
         {
             var AcousticalDetectionChance = AcousticalDetectionCalculation(SeekingVessel, HidingVessel);
-            int AcousticalRoll = Dice.RollPercentage();
+            double AcousticalRoll = Dice.RollPercentage() * AquisitionBonus;
             //UIScreen.DisplayLines.Add(string.Format("{0} has a {1} detecting chance on vessel using acoustics and rolled {2}", SeekingVessel.UIName, AcousticalDetectionChance, AcousticalRoll));
             return (AcousticalDetectionChance > AcousticalRoll);
         }

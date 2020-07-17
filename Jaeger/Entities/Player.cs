@@ -169,8 +169,6 @@ namespace MeerJager.Entities
                 UIScreen.DisplayLines.Add("They missed!");
             }
         }
-
-
     }
 
 
