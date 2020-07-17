@@ -9,8 +9,9 @@ namespace MeerJager.Entities
     {
         public int Health { get; set; }
         public Weapon[] Armament { get; set; }
-        
-        
+        public int Speed { get; set; }
+
+
         public string UIName { get; set; }
         public Depth Depth { get; set; }
         public int BaseRange { get; set; }

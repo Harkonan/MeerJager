@@ -21,10 +21,6 @@ namespace MeerJager.Entities
             {
                 CombatRound();
                 GetPlayerChoice();
-                if (!enemy.PlayerCanSee)
-                {
-                    enemy.CloseDistance();
-                }
             }
             if (player.Health <= 0)
             {
@@ -42,30 +38,6 @@ namespace MeerJager.Entities
             var menuOptions = new List<MenuOption>();
             if (enemy.PlayerCanSee)
             {
-                var closeDistance = new MenuOption()
-                {
-                    Display = "Close Distance",
-                    Key = 'C',
-                    Id = OptionNumber++,
-                    Action = enemy.CloseDistance
-                };
-                menuOptions.Add(closeDistance);
-                var openDistance = new MenuOption()
-                {
-                    Display = "Open Distance",
-                    Key = 'O',
-                    Id = OptionNumber++,
-                    Action = enemy.OpenDistance
-                };
-                menuOptions.Add(openDistance);
-                var holdPosition = new MenuOption()
-                {
-                    Display = "Hold Possition",
-                    Key = 'H',
-                    Id = OptionNumber++,
-                    Action = () => { }
-                };
-                menuOptions.Add(holdPosition);
                 var Weapons = new MenuOption()
                 {
                     Display = "Weapons Systems",
@@ -75,18 +47,44 @@ namespace MeerJager.Entities
                 };
                 menuOptions.Add(Weapons);
             }
-            else
-            {
-                var closeDistance = new MenuOption()
-                {
-                    Display = "Continue on Course",
-                    Key = 'C',
-                    Id = OptionNumber++,
-                    Action = enemy.CloseDistance
-                };
-                menuOptions.Add(closeDistance);
-            }
 
+            var ContinueOnCourse = new MenuOption()
+            {
+                Display = "Continue on Course",
+                Key = 'C',
+                Id = OptionNumber++,
+                Action = () =>
+                {
+                    enemy.ChangeDistance(-player.Speed);
+                }
+            };
+            menuOptions.Add(ContinueOnCourse);
+
+            var IncreaseSpeed = new MenuOption()
+            {
+                Display = "Increase Speed",
+                Key = 'I',
+                Id = OptionNumber++,
+                Action = () =>
+                {
+                    player.ChangeSpeed(10);
+                    GetPlayerChoice();
+                }
+            };
+            menuOptions.Add(IncreaseSpeed);
+
+            var DecreaseSpeed = new MenuOption()
+            {
+                Display = "Decrease Speed",
+                Key = 'D',
+                Id = OptionNumber++,
+                Action = () =>
+                {
+                    player.ChangeSpeed(-10);
+                    GetPlayerChoice();
+                }
+            };
+            menuOptions.Add(DecreaseSpeed);
 
             var depths = Depths.GetDepths;
             if (depths.Any(x => x.DepthOrder == player.Depth.DepthOrder + 1))

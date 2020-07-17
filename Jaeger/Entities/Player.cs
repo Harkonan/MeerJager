@@ -17,6 +17,7 @@ namespace MeerJager.Entities
         public List<ActiveTorpedos> ActiveTorpedos { get; set; }
 
 
+
         public static Player GetPlayer
         {
             get
@@ -37,6 +38,7 @@ namespace MeerJager.Entities
             Profile = 60;
             Noise = 60;
             Depth = Depths.GetDepths[2];
+            Speed = Depth.MaxSpeedAtDepth;
             Armament = new Weapon[5];
             for (int i = 0; i < 4; i++)
             {
@@ -110,7 +112,7 @@ namespace MeerJager.Entities
             if (depths.Any(x => x.DepthOrder == Depth.DepthOrder + 1))
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder + 1).FirstOrDefault();
-                UIScreen.DisplayLines.Add(String.Format("Depth set to {0} aye", Depth.DepthName));
+                UIScreen.DisplayLines.Add(String.Format("Depth set to {0}, aye", Depth.DepthName));
             }
         }
 
@@ -120,8 +122,27 @@ namespace MeerJager.Entities
             if (depths.Any(x => x.DepthOrder == Depth.DepthOrder - 1))
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder - 1).FirstOrDefault();
-                UIScreen.DisplayLines.Add(String.Format("Depth set to {0} aye", Depth.DepthName));
+                UIScreen.DisplayLines.Add(String.Format("Depth set to {0}, aye", Depth.DepthName));
             }
+        } 
+
+        public void ChangeSpeed(int SpeedChange)
+        {
+            if (Speed + SpeedChange > Depth.MaxSpeedAtDepth)
+            {
+                Speed = Depth.MaxSpeedAtDepth;
+                UIScreen.DisplayLines.Add(String.Format("Speed set to {0} (Maximum for current Depth), aye", Speed));
+            } else if( Speed + SpeedChange < -Depth.MaxSpeedAtDepth)
+            {
+                Speed = -Depth.MaxSpeedAtDepth;
+                UIScreen.DisplayLines.Add(String.Format("Speed set to {0} (Minimum for current Depth), aye", Speed));
+            }
+            else
+            {
+                Speed += SpeedChange;
+                UIScreen.DisplayLines.Add(String.Format("Speed set to {0} aye", Speed));
+            }    
+
         }
 
 

@@ -27,10 +27,10 @@ namespace Jaeger.Entities
         Depths()
         {
             Options = new Depth[4];
-            Options[0] = new Depth() { DepthName = "Surface", ChanceToSeeModifier = 1, ChanceToHearModifer = 1, DepthOrder = 3 };
-            Options[1] = new Depth() { DepthName = "Periscope", ChanceToSeeModifier = 0.6, ChanceToHearModifer = 0.6, DepthOrder = 2 };
-            Options[2] = new Depth() { DepthName = "Cruising", ChanceToSeeModifier = 0.001, ChanceToHearModifer = 0.4, DepthOrder = 1 };
-            Options[3] = new Depth() { DepthName = "Evasion", ChanceToSeeModifier = 0.001, ChanceToHearModifer = 0.2, DepthOrder = 0 };
+            Options[0] = new Depth() { DepthName = "Surface", ChanceToSeeModifier = 1, ChanceToHearModifer = 1, DepthOrder = 3, MaxSpeedAtDepth = 300 };
+            Options[1] = new Depth() { DepthName = "Periscope", ChanceToSeeModifier = 0.6, ChanceToHearModifer = 0.6, DepthOrder = 2, MaxSpeedAtDepth = 100 };
+            Options[2] = new Depth() { DepthName = "Cruising", ChanceToSeeModifier = 0.001, ChanceToHearModifer = 0.4, DepthOrder = 1, MaxSpeedAtDepth = 50 };
+            Options[3] = new Depth() { DepthName = "Evasion", ChanceToSeeModifier = 0.001, ChanceToHearModifer = 0.2, DepthOrder = 0, MaxSpeedAtDepth = 10 };
         }
 
     }
@@ -41,5 +41,7 @@ namespace Jaeger.Entities
         public double ChanceToHearModifer { get; set; }
         public string DepthName { get; set; }
         public int DepthOrder { get; set; }
+        public int MaxSpeedAtDepth { get; set; }
     }
+
 }

@@ -104,15 +104,6 @@ namespace MeerJager.Entities
             ReloadGuns();
         }
 
-        public void CloseDistance()
-        {
-            ChangeDistance(-100);
-        }
-
-        public void OpenDistance()
-        {
-            ChangeDistance(100);
-        }
 
         public void ChangeDistance(int change)
         {

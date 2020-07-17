@@ -8,5 +8,5 @@ Depth Charges
 
 Torpedo miss & early detonation
 Move all data into SQLLite
-move weapon reload stores out of weapons and onto the vessel
 move damage report to percentage system
+revamp depth system so that it is indivudual to each ship (for speeds)
