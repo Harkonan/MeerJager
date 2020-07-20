@@ -20,7 +20,7 @@ namespace MeerJager.Entities
             DistanceToTarget -= Speed;
             if (DistanceToTarget > 0)
             {
-                UIScreen.DisplayLines.Add(string.Format("{0} {1} meters to target", UIName, DistanceToTarget));
+                Program.CurrentLog.WriteToLog(string.Format("{0} {1} meters to target", UIName, DistanceToTarget));
             }
             else
             {

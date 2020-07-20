@@ -86,11 +86,11 @@ namespace MeerJager.Entities
                 int damage = Armament.FireWeapon(profile);
                 if (PlayerCanSee)
                 {
-                    UIScreen.DisplayLines.Add(String.Format("{0} has fired {1}!", UIName, Armament.UIName));
+                    Program.CurrentLog.WriteToLog(String.Format("{0} has fired {1}!", UIName, Armament.UIName));
                 }
                 else
                 {
-                    UIScreen.DisplayLines.Add(String.Format("Incoming {0} fire from unknown vessel!", Armament.Type.ToString().Replace('_', ' ')));
+                    Program.CurrentLog.WriteToLog(String.Format("Incoming {0} fire from unknown vessel!", Armament.Type.ToString().Replace('_', ' ')));
                 }
                 Armament.Status = WeaponStatus.reloading;
                 Target.SetDamage(damage);
@@ -112,7 +112,8 @@ namespace MeerJager.Entities
 
             if (PlayerCanSee)
             {
-                UIScreen.DisplayLines.Add(string.Format("Captain, {0} is now at {1}m", UIName, DistanceToPlayer));
+                Program.CurrentLog.WriteToLog(string.Format("Captain, {0} is now at {1}m", UIName, DistanceToPlayer));
+
             }
         }
 
@@ -122,7 +123,7 @@ namespace MeerJager.Entities
             {
                 CanSeePlayer = true;
                 AquisitionBonus.AddAquisitionBonus();
-                UIScreen.DisplayLines.Add(string.Format("Captain, {0} is moving to engage!", UIName));
+                Program.CurrentLog.WriteToLog(string.Format("Captain, {0} is moving to engage!", UIName));
             }
 
         }
@@ -131,7 +132,7 @@ namespace MeerJager.Entities
             if (PlayerCanSee && CanSeePlayer)
             {
                 CanSeePlayer = false;
-                UIScreen.DisplayLines.Add(string.Format("Captain, {0} has lost us!", UIName));
+                Program.CurrentLog.WriteToLog(string.Format("Captain, {0} has lost us!", UIName));
             }
         }
 
@@ -141,7 +142,7 @@ namespace MeerJager.Entities
             {
                 PlayerCanSee = true;
                 PlayerAquisitionBonus.AddAquisitionBonus();
-                UIScreen.DisplayLines.Add(string.Format("{0} Spotted on {2} at {1}m!", UIName, DistanceToPlayer, DetectionMethod));
+                Program.CurrentLog.WriteToLog(string.Format("{0} Spotted on {2} at {1}m!", UIName, DistanceToPlayer, DetectionMethod));
             }
         }
         public void Unspotted()
@@ -149,7 +150,7 @@ namespace MeerJager.Entities
             if (PlayerCanSee)
             {
                 PlayerCanSee = false;
-                UIScreen.DisplayLines.Add(string.Format("We have lost track on the Enemy Ship!"));
+                Program.CurrentLog.WriteToLog(string.Format("We have lost track on the Enemy Ship!"));
             }
         }
 
@@ -207,13 +208,13 @@ namespace MeerJager.Entities
             {
                 if (PlayerCanSee)
                 {
-                    UIScreen.DisplayLines.Add(string.Format("{0} has hit {1}!", WeaponSystem, UIName));
+                    Program.CurrentLog.WriteToLog(string.Format("{0} has hit {1}!", WeaponSystem, UIName));
                 }
                 else
                 {
-                    UIScreen.DisplayLines.Add(string.Format("{0} has detonated!", WeaponSystem));
+                    Program.CurrentLog.WriteToLog(string.Format("{0} has detonated!", WeaponSystem));
                 }
-                UIScreen.DisplayLines.Add(GetDamageReport());
+                Program.CurrentLog.WriteToLog(GetDamageReport());
 
                 if (Health - amount <= 0)
                 {
@@ -226,14 +227,14 @@ namespace MeerJager.Entities
             }
             else
             {
-                UIScreen.DisplayLines.Add(string.Format("{0} missed!", WeaponSystem));
+                Program.CurrentLog.WriteToLog(string.Format("{0} missed!", WeaponSystem));
             }
         }
 
 
         public void CheckDetection(Player player)
         {
-            //UIScreen.DisplayLines.Add(string.Format("Current Range {0}", DistanceToPlayer));
+            //Program.CurrentLog.WriteToLog(string.Format("Current Range {0}", DistanceToPlayer));
 
             //Can the Enemy See the player
             //Visual Check
@@ -288,7 +289,7 @@ namespace MeerJager.Entities
         {
             var VisualDetectionChance = VisualDetectionCalculation(SeekingVessel, HidingVessel);
             double VisualRoll = Dice.RollPercentage() * AquisitionBonus;
-            //UIScreen.DisplayLines.Add(string.Format("{0} has a {1} detecting chance on vessel using visual and rolled {2}", SeekingVessel.UIName, VisualDetectionChance, VisualRoll));
+            //Program.CurrentLog.WriteToLog(string.Format("{0} has a {1} detecting chance on vessel using visual and rolled {2}", SeekingVessel.UIName, VisualDetectionChance, VisualRoll));
             return (VisualDetectionChance > VisualRoll);
 
         }
@@ -310,7 +311,7 @@ namespace MeerJager.Entities
         {
             var AcousticalDetectionChance = AcousticalDetectionCalculation(SeekingVessel, HidingVessel);
             double AcousticalRoll = Dice.RollPercentage() * AquisitionBonus;
-            //UIScreen.DisplayLines.Add(string.Format("{0} has a {1} detecting chance on vessel using acoustics and rolled {2}", SeekingVessel.UIName, AcousticalDetectionChance, AcousticalRoll));
+            //Program.CurrentLog.WriteToLog(string.Format("{0} has a {1} detecting chance on vessel using acoustics and rolled {2}", SeekingVessel.UIName, AcousticalDetectionChance, AcousticalRoll));
             return (AcousticalDetectionChance > AcousticalRoll);
         }
 

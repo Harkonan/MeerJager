@@ -85,7 +85,7 @@ namespace MeerJager.Entities
             {
                 if (weapon.Type == WeaponType.Torpedo)
                 {
-                    UIScreen.DisplayLines.Add(weapon.UIName + " Launched");
+                    Program.CurrentLog.WriteToLog(weapon.UIName + " Launched");
                     ActiveTorpedos.Add(new ActiveTorpedos()
                     {
                         Damage = weapon.Damage.WeightedRandom(10),
@@ -112,7 +112,7 @@ namespace MeerJager.Entities
             if (depths.Any(x => x.DepthOrder == Depth.DepthOrder + 1))
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder + 1).FirstOrDefault();
-                UIScreen.DisplayLines.Add(String.Format("Depth set to {0}, aye", Depth.DepthName));
+                Program.CurrentLog.WriteToLog(String.Format("Depth set to {0}, aye", Depth.DepthName));
                 ChangeSpeed(0);
             }
 
@@ -124,7 +124,7 @@ namespace MeerJager.Entities
             if (depths.Any(x => x.DepthOrder == Depth.DepthOrder - 1))
             {
                 Depth = depths.Where(x => x.DepthOrder == Depth.DepthOrder - 1).FirstOrDefault();
-                UIScreen.DisplayLines.Add(String.Format("Depth set to {0}, aye", Depth.DepthName));
+                Program.CurrentLog.WriteToLog(String.Format("Depth set to {0}, aye", Depth.DepthName));
             }
         } 
 
@@ -133,16 +133,16 @@ namespace MeerJager.Entities
             if (Speed + SpeedChange > Depth.MaxSpeedAtDepth)
             {
                 Speed = Depth.MaxSpeedAtDepth;
-                UIScreen.DisplayLines.Add(String.Format("Speed set to {0} (Maximum for current Depth), aye", Speed));
+                Program.CurrentLog.WriteToLog(String.Format("Speed set to {0} (Maximum for current Depth), aye", Speed));
             } else if( Speed + SpeedChange < -Depth.MaxSpeedAtDepth)
             {
                 Speed = -Depth.MaxSpeedAtDepth;
-                UIScreen.DisplayLines.Add(String.Format("Speed set to {0} (Minimum for current Depth), aye", Speed));
+                Program.CurrentLog.WriteToLog(String.Format("Speed set to {0} (Minimum for current Depth), aye", Speed));
             }
             else
             {
                 Speed += SpeedChange;
-                UIScreen.DisplayLines.Add(String.Format("Speed set to {0} aye", Speed));
+                Program.CurrentLog.WriteToLog(String.Format("Speed set to {0} aye", Speed));
             }    
 
         }
@@ -176,7 +176,7 @@ namespace MeerJager.Entities
         {
             if (amount > 0)
             {
-                UIScreen.DisplayLines.Add("Hit!");
+                Program.CurrentLog.WriteToLog("Hit!");
                 if (Health - amount <= 0)
                 {
                     Health = 0;
@@ -185,11 +185,11 @@ namespace MeerJager.Entities
                 {
                     Health -= amount;
                 }
-                UIScreen.DisplayLines.Add(GetDamageReport());
+                Program.CurrentLog.WriteToLog(GetDamageReport());
             }
             else
             {
-                UIScreen.DisplayLines.Add("They missed!");
+                Program.CurrentLog.WriteToLog("They missed!");
             }
         }
     }
