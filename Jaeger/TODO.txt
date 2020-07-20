@@ -1,11 +1,4 @@
-﻿Weapon Systems
-
-Main Battery - Only fire at surfaced or periscope depth vessels, long range
-Secondary Battery - Only fire at surfaced or periscope depth vessels, long range
-Depth Charges 
-	- Normal sub 1000m range only on submersed vessels
-
-
+﻿
 Torpedo miss & early detonation
 Move all data into SQLLite
 move damage report to percentage system
@@ -13,3 +6,5 @@ revamp depth system so that it is indivudual to each ship (for speeds)
 Give enemy a speed and heading to change distance to player
 Alow enemy to attempt to evade torpedos
 add captains reference book giving armament details for encountered ships
+Add in convoy system for fighting multiple enemies
+create looping gameplay when enemy is destroyed
