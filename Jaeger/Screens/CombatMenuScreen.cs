@@ -309,19 +309,11 @@ namespace MeerJager.Screens
             }
             else if(player.Health <= 0)
             {
-                MessageScreen Message = new MessageScreen();
-                Message.Message = "You Died";
-                Message.RenderMessage();
-                Global.CurrentScreen = Message;
-                Global.CurrentScreen.IsFocused = true;
+                new MessageScreen("You Died", Program.EndGame, null, Color.Crimson, null, Color.Crimson);
             }
             else
             {
-                MessageScreen Message = new MessageScreen();
-                Message.Message = "Enemy Destroyed";
-                Message.RenderMessage();
-                Global.CurrentScreen = Message;
-                Global.CurrentScreen.IsFocused = true;
+                new MessageScreen("Enemy Destroyed", Program.EndGame, null, null, null, null);
             }
         }
 

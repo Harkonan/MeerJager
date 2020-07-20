@@ -35,12 +35,6 @@ namespace MeerJager
 
             // Start the game.
             SadConsole.Game.Instance.Run();
-
-
-            
-            
-
-            
             //Console.ReadKey();
 
             SadConsole.Game.Instance.Dispose();
@@ -83,12 +77,7 @@ namespace MeerJager
 
             
 
-            MessageScreen Message = new MessageScreen();
-            Message.Message = "Captain, acoustics has picked up something. Might be nothing though.";
-            Message.RenderMessage();
-            Global.CurrentScreen = Message;
-            Global.CurrentScreen.IsFocused = true;
-
+            new MessageScreen("Captain, acoustics has picked up something. Might be nothing though.", StartCombat, null, null, null, null);
 
         }
 
@@ -108,9 +97,11 @@ namespace MeerJager
             Global.CurrentScreen = Combat;
             Menu.IsFocused = true;
             Menu.StartCombat();
+        }
 
-
-
+        public static void EndGame()
+        {
+            SadConsole.Game.Instance.Exit();
         }
 
 
