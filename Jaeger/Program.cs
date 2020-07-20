@@ -13,6 +13,9 @@ using Console = SadConsole.Console;
 using SadConsole.Components;
 using Microsoft.Xna.Framework.Input;
 using MeerJager.Screens;
+using MeerJager.Data;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace MeerJager
 {
@@ -52,26 +55,31 @@ namespace MeerJager
             //console.Print(Width-39, 1, "Orders?");
             //console.Components.Add(new KBcomp());
 
-            
-            //console.IsVisible = true;
 
+            //console.IsVisible = true;
+            
             
             Player player = Player.GetPlayer;
 
             Enemy = new Enemy();
 
-            using (StreamReader r = new StreamReader(".\\Data\\Enemy.json"))
+            using (var db = new Data.Database.AppDataContext())
             {
-                string json = r.ReadToEnd();
-                var e = JsonSerializer.Deserialize<EnemyDirectory>(json);
-                EnemyType RandomEnemy = (EnemyType)Dice.RandomFromList(e.Frigates);
 
-                Enemy.UIName = RandomEnemy.UIName + " Class " + "Frigate";
+                var Ships = db.Ships
+                    .Include(x => x.Class)
+                    .Include(x => x.Health)
+                    .Include(x => x.Profile)
+                    .ToList();
+                Data.Database.Ship RandomEnemy = (Data.Database.Ship)Dice.RandomFromList(Ships);
+                
+
+                Enemy.UIName = RandomEnemy.Name + " Class " + RandomEnemy.Class.ClassName;
                 Enemy.CurrentHealth = RandomEnemy.Health.WeightedRandom(2);
                 Enemy.Profile = RandomEnemy.Profile.WeightedRandom(2);
                 Enemy.DistanceToPlayer = Dice.RandomBetweenTwo(10000, 20000);
-
             }
+
             new MessageScreen("Captain, acoustics has picked up something. Might be nothing though.", StartCombat, null, null, null, null);
         }
 

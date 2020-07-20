@@ -12,16 +12,6 @@ namespace MeerJager.Entities
         public Enemy[] Vessels { get; set; }
     }
 
-    public class EnemyDirectory
-    {
-        public List<EnemyType> Frigates { get; set; }
-    }
-    public class EnemyType
-    {
-        public string UIName { get; set; }
-        public Range Health { get; set; }
-        public Range Profile { get; set; }
-    }
 
     public class Enemy : Vessel
     {
