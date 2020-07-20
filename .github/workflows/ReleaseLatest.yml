@@ -26,5 +26,5 @@ jobs:
           files: |
             LICENSE.txt
             *.jar
-            Latest.zip
+            MeerJager-latest.zip
             
