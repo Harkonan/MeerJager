@@ -290,7 +290,7 @@ namespace MeerJager.Entities
             var VisualDetectionChance = VisualDetectionCalculation(SeekingVessel, HidingVessel);
             double VisualRoll = Dice.RollPercentage() * AquisitionBonus;
             //Program.CurrentLog.WriteToLog(string.Format("{0} has a {1} detecting chance on vessel using visual and rolled {2}", SeekingVessel.UIName, VisualDetectionChance, VisualRoll));
-            return (VisualDetectionChance > VisualRoll);
+            return (VisualDetectionChance < VisualRoll);
 
         }
 
@@ -312,7 +312,7 @@ namespace MeerJager.Entities
             var AcousticalDetectionChance = AcousticalDetectionCalculation(SeekingVessel, HidingVessel);
             double AcousticalRoll = Dice.RollPercentage() * AquisitionBonus;
             //Program.CurrentLog.WriteToLog(string.Format("{0} has a {1} detecting chance on vessel using acoustics and rolled {2}", SeekingVessel.UIName, AcousticalDetectionChance, AcousticalRoll));
-            return (AcousticalDetectionChance > AcousticalRoll);
+            return (AcousticalDetectionChance < AcousticalRoll);
         }
 
     }

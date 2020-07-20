@@ -45,6 +45,7 @@ namespace MeerJager.Screens
                 Forground = Color.Red,
                 Action = () =>
                 {
+                    Program.CurrentLog.ClearLog();
                     Program.CurrentLog.WriteToLog("Contining on couse, aye Captain");
                     enemy.ChangeDistance(-player.Speed);
                     EndPlayerChoice();
@@ -59,6 +60,7 @@ namespace MeerJager.Screens
                 Id = OptionNumber++,
                 Action = () =>
                 {
+                    Program.CurrentLog.ClearLog();
                     player.ChangeSpeed(10);
                 }
             };
@@ -71,6 +73,7 @@ namespace MeerJager.Screens
                 Id = OptionNumber++,
                 Action = () =>
                 {
+                    Program.CurrentLog.ClearLog();
                     player.ChangeSpeed(-10);
                 }
             };
@@ -86,6 +89,7 @@ namespace MeerJager.Screens
                     Id = OptionNumber++,
                     Forground = Color.Red,
                     Action = () => {
+                        Program.CurrentLog.ClearLog();
                         player.RaiseDepth();
                         EndPlayerChoice();
                     }
@@ -102,6 +106,7 @@ namespace MeerJager.Screens
                     Id = OptionNumber++,
                     Forground = Color.Red,
                     Action = () => {
+                        Program.CurrentLog.ClearLog();
                         player.LowerDepth();
                         EndPlayerChoice();
                     }
@@ -257,6 +262,7 @@ namespace MeerJager.Screens
                     Id = OptionNumber++,
                     Forground = Color.Red,
                     Action = () => {
+                        Program.CurrentLog.ClearLog();
                         player.ExecuteAttack();
                         EndPlayerChoice();
                         }
