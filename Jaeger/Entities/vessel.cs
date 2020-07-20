@@ -7,7 +7,8 @@ namespace MeerJager.Entities
 {
     public class Vessel
     {
-        public int Health { get; set; }
+        public int CurrentHealth { get; set; }
+        public int MaxHealth { get; set; }
         public Weapon[] Armament { get; set; }
         public int Speed { get; set; }
 
