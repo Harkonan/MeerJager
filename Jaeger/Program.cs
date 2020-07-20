@@ -26,8 +26,6 @@ namespace MeerJager
 
         static void Main(string[] args)
         {
-            
-
             SadConsole.Game.Create(Width, Height);
 
             // Hook the start event so we can add consoles to the system.
