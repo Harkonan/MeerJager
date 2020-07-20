@@ -72,11 +72,7 @@ namespace MeerJager
                 Enemy.DistanceToPlayer = Dice.RandomBetweenTwo(10000, 20000);
 
             }
-
-            
-
             new MessageScreen("Captain, acoustics has picked up something. Might be nothing though.", StartCombat, null, null, null, null);
-
         }
 
         public static void StartCombat()

@@ -281,10 +281,7 @@ namespace MeerJager.Screens
                     Selected = true
                 });
             }
-
             RenderMenuOptions();
-
-
         }
 
         private void CombatRound()
