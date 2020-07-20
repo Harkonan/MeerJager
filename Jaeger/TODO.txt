@@ -1,8 +1,12 @@
-﻿
+﻿create looping gameplay when enemy is destroyed
+add captains reference book giving armament details for encountered ships
+Add system where longer range gun shots are less accurate
+Add System to retreat from battle
+
 Torpedo miss & early detonation
 revamp depth system so that it is indivudual to each ship (for speeds)
 Give enemy a speed and heading to change distance to player
 Alow enemy to attempt to evade torpedos
-add captains reference book giving armament details for encountered ships
+
 Add in convoy system for fighting multiple enemies
-create looping gameplay when enemy is destroyed
+

@@ -75,7 +75,8 @@ namespace MeerJager
                 
 
                 Enemy.UIName = RandomEnemy.Name + " Class " + RandomEnemy.Class.ClassName;
-                Enemy.CurrentHealth = RandomEnemy.Health.WeightedRandom(2);
+                Enemy.MaxHealth= RandomEnemy.Health.WeightedRandom(2);
+                Enemy.CurrentHealth = Enemy.MaxHealth;
                 Enemy.Profile = RandomEnemy.Profile.WeightedRandom(2);
                 Enemy.DistanceToPlayer = Dice.RandomBetweenTwo(10000, 20000);
             }

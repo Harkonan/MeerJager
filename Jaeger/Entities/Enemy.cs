@@ -155,7 +155,7 @@ namespace MeerJager.Entities
 
         public string GetDamageReport()
         {
-            int HealthPercent = (CurrentHealth / MaxHealth) * 100;
+            int HealthPercent = (int)(((double)CurrentHealth / (double)MaxHealth) * 100);
             if (PlayerCanSee)
             {
                 if (HealthPercent <= 0)
