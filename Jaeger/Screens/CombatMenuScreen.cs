@@ -53,6 +53,22 @@ namespace MeerJager.Screens
             };
             AddOption(ContinueOnCourse);
 
+            var ContinueToDistance = new MenuOption()
+            {
+                Display = "Close to torpedo range ",
+                Key = Microsoft.Xna.Framework.Input.Keys.V,
+                Id = OptionNumber++,
+                Forground = Color.Red,
+                Action = () =>
+                {
+                    Program.CurrentLog.ClearLog();
+                    ContinueOnCourseTillDistance();
+                }
+            };
+            AddOption(ContinueToDistance);
+
+
+
             var IncreaseSpeed = new MenuOption()
             {
                 Display = "Increase Speed",
@@ -123,7 +139,11 @@ namespace MeerJager.Screens
             RenderMenuOptions();
         }
 
-
+        private void ContinueOnCourseTillDistance()
+        {
+            player.DesieredDistance = 7500;
+            EndPlayerChoice();
+        }
 
         public void StartCombat()
         {
@@ -302,7 +322,18 @@ namespace MeerJager.Screens
             
             if (player.CurrentHealth > 0 && enemy.CurrentHealth > 0)
             {
-                GetPlayerChoice();
+                if (player.DesieredDistance.HasValue && player.DesieredDistance < enemy.DistanceToPlayer)
+                {
+                    Program.CurrentLog.ClearLog();
+                    player.ChangeSpeed(player.Depth.MaxSpeedAtDepth);
+                    enemy.ChangeDistance(-player.Speed);
+                    CombatRound();
+                }
+                else
+                {
+                    GetPlayerChoice();
+                }
+                
             }
             else if(player.CurrentHealth <= 0)
             {

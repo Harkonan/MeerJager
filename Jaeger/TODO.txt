@@ -7,4 +7,4 @@ Alow enemy to attempt to evade torpedos
 add captains reference book giving armament details for encountered ships
 Add in convoy system for fighting multiple enemies
 create looping gameplay when enemy is destroyed
-Add procced to distance option
+ -- Add procced to distance option
