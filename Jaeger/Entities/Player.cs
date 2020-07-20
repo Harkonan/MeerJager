@@ -34,7 +34,8 @@ namespace MeerJager.Entities
         Player()
         {
             UIName = "Player";
-            Health = 100;
+            CurrentHealth = 100;
+            MaxHealth = 100;
             Profile = 60;
             Noise = 60;
             Depth = Depths.GetDepths[2];
@@ -150,19 +151,21 @@ namespace MeerJager.Entities
 
         public string GetDamageReport()
         {
-            if (Health <= 20)
+            int HealthPercent = (CurrentHealth / MaxHealth) * 100;
+
+            if (HealthPercent <= 20)
             {
                 return "Our hull is critically compormised";
             }
-            else if (20 < Health && Health <= 60)
+            else if (20 < HealthPercent && HealthPercent <= 60)
             {
                 return "Our hull is heavily damaged";
             }
-            else if (20 < Health && Health <= 60)
+            else if (20 < HealthPercent && HealthPercent <= 60)
             {
                 return "Our hull is damaged";
             }
-            else if (60 < Health && Health <= 99)
+            else if (60 < HealthPercent && HealthPercent <= 99)
             {
                 return "Our hull is slightly damaged";
             }
@@ -177,13 +180,13 @@ namespace MeerJager.Entities
             if (amount > 0)
             {
                 Program.CurrentLog.WriteToLog("Hit!");
-                if (Health - amount <= 0)
+                if (CurrentHealth - amount <= 0)
                 {
-                    Health = 0;
+                    CurrentHealth = 0;
                 }
                 else
                 {
-                    Health -= amount;
+                    CurrentHealth -= amount;
                 }
                 Program.CurrentLog.WriteToLog(GetDamageReport());
             }

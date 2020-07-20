@@ -67,7 +67,7 @@ namespace MeerJager
                 EnemyType RandomEnemy = (EnemyType)Dice.RandomFromList(e.Frigates);
 
                 Enemy.UIName = RandomEnemy.UIName + " Class " + "Frigate";
-                Enemy.Health = RandomEnemy.Health.WeightedRandom(2);
+                Enemy.CurrentHealth = RandomEnemy.Health.WeightedRandom(2);
                 Enemy.Profile = RandomEnemy.Profile.WeightedRandom(2);
                 Enemy.DistanceToPlayer = Dice.RandomBetweenTwo(10000, 20000);
 

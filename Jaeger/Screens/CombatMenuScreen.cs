@@ -300,11 +300,11 @@ namespace MeerJager.Screens
             }
             player.ReloadWeapons();
             
-            if (player.Health > 0 && enemy.Health > 0)
+            if (player.CurrentHealth > 0 && enemy.CurrentHealth > 0)
             {
                 GetPlayerChoice();
             }
-            else if(player.Health <= 0)
+            else if(player.CurrentHealth <= 0)
             {
                 new MessageScreen("You Died", Program.EndGame, null, Color.Crimson, null, Color.Crimson);
             }

@@ -36,7 +36,8 @@ namespace MeerJager.Entities
         public Enemy()
         {
             UIName = "Dover Class frigate";
-            Health = 100;
+            CurrentHealth = 100;
+            MaxHealth = 100;
             Profile = 50;
             Noise = 90;
             Torpedos = int.MaxValue;
@@ -164,25 +165,26 @@ namespace MeerJager.Entities
 
         public string GetDamageReport()
         {
+            int HealthPercent = (CurrentHealth / MaxHealth) * 100;
             if (PlayerCanSee)
             {
-                if (Health <= 0)
+                if (HealthPercent <= 0)
                 {
                     return string.Format("{0}'s is sinking!", UIName);
                 }
-                if (Health <= 20)
+                if (HealthPercent <= 20)
                 {
                     return string.Format("{0}'s hull is critically compormised", UIName);
                 }
-                else if (20 < Health && Health <= 60)
+                else if (20 < HealthPercent && HealthPercent <= 60)
                 {
                     return string.Format("{0}'s hull is heavily damaged", UIName);
                 }
-                else if (20 < Health && Health <= 60)
+                else if (20 < HealthPercent && HealthPercent <= 60)
                 {
                     return string.Format("{0}'s hull is damaged", UIName);
                 }
-                else if (60 < Health && Health <= 100)
+                else if (60 < HealthPercent && HealthPercent <= 100)
                 {
                     return string.Format("{0}'s hull is slightly damaged", UIName);
                 }
@@ -193,7 +195,7 @@ namespace MeerJager.Entities
             }
             else
             {
-                if (Health <= 0)
+                if (HealthPercent <= 0)
                 {
                     return string.Format("Detecting a sinking vessel!");
                 }
@@ -216,13 +218,13 @@ namespace MeerJager.Entities
                 }
                 Program.CurrentLog.WriteToLog(GetDamageReport());
 
-                if (Health - amount <= 0)
+                if (CurrentHealth - amount <= 0)
                 {
-                    Health = 0;
+                    CurrentHealth = 0;
                 }
                 else
                 {
-                    Health -= amount;
+                    CurrentHealth -= amount;
                 }
             }
             else
