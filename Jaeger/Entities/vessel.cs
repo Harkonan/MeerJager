@@ -9,7 +9,7 @@ namespace MeerJager.Entities
     {
         public int CurrentHealth { get; set; }
         public int MaxHealth { get; set; }
-        public Weapon[] Armament { get; set; }
+        public List<Weapon> Armament { get; set; }
         public int Speed { get; set; }
 
 

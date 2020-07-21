@@ -30,6 +30,34 @@ namespace MeerJager.Entities
             Status = WeaponStatus.loaded;
         }
 
+        public Weapon(Data.Database.Weapon DBWeapon, Data.Database.WeaponMount DBMount)
+        {
+            Damage = DBWeapon.Damage;
+            ReloadRounds = DBWeapon.ReloadRounds;
+            HitPercent = DBWeapon.HitPercent;
+            UIName = DBWeapon.Name + " ("+ DBMount.MountName +")";
+            Type = DBWeapon.Type;
+            Status = WeaponStatus.loaded;
+            switch (DBWeapon.Type)
+            {
+                case WeaponType.Main_Battery:
+                    EffectiveDepths = Depths.GetDepths[0..2].ToList();
+                    break;
+                case WeaponType.Torpedo:
+                    EffectiveDepths = Depths.GetDepths.ToList();
+                    break;
+                case WeaponType.Secondary_Battery:
+                    EffectiveDepths = Depths.GetDepths[0..2].ToList();
+                    break;
+                case WeaponType.Depth_Charge:
+                    EffectiveDepths = Depths.GetDepths[1..4].ToList();
+                    break;
+                default:
+                    break;
+            }
+            Range = DBWeapon.Range;
+        }
+
         public int FireWeapon(double _targetProfile)
         {
             Status = WeaponStatus.empty;

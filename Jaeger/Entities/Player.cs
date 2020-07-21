@@ -40,7 +40,7 @@ namespace MeerJager.Entities
             Noise = 60;
             Depth = Depths.GetDepths[2];
             Speed = Depth.MaxSpeedAtDepth;
-            Armament = new Weapon[5];
+            Armament = new List<Weapon>();
             for (int i = 0; i < 4; i++)
             {
                 List<Depth> ValidDepths = new List<Depth>();
@@ -59,7 +59,7 @@ namespace MeerJager.Entities
                     FiringDepths = Depths.GetDepths[0..2].ToList(),
                     Range = new Range(500,7500)
                 };
-                Armament[i] = weapon;
+                Armament.Add(weapon);
             }
             Weapon BowGun = new Weapon()
             {
@@ -71,7 +71,7 @@ namespace MeerJager.Entities
                 FiringDepths = new List<Depth>() { Depths.GetDepths[0] },
                 Range = new Range(0, 11950)
             };
-            Armament[4] = BowGun;
+            Armament.Add(BowGun);
             Supplies = 200;
             PoliticalCapital = 10;
             Torpedos = 10;
@@ -165,7 +165,7 @@ namespace MeerJager.Entities
             {
                 return "Our hull is damaged";
             }
-            else if (60 < HealthPercent && HealthPercent <= 99)
+            else if (60 < HealthPercent && HealthPercent < 100)
             {
                 return "Our hull is slightly damaged";
             }

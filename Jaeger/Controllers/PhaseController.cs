@@ -26,6 +26,8 @@ namespace MeerJager.Entities
                     .Include(x => x.Class)
                     .Include(x => x.Health)
                     .Include(x => x.Profile)
+                    .Include(x => x.WeaponMounts).ThenInclude(m => m.PossibleWeapons).ThenInclude(w => w.Weapon).ThenInclude(w => w.Damage)
+                    .Include(x => x.WeaponMounts).ThenInclude(m => m.PossibleWeapons).ThenInclude(w => w.Weapon).ThenInclude(w => w.Range)
                     .ToList();
                 Data.Database.Ship RandomEnemy = (Data.Database.Ship)Dice.RandomFromList(Ships);
 
@@ -35,6 +37,15 @@ namespace MeerJager.Entities
                 Enemy.CurrentHealth = Enemy.MaxHealth;
                 Enemy.Profile = RandomEnemy.Profile.WeightedRandom(2);
                 Enemy.DistanceToPlayer = Dice.RandomBetweenTwo(10000, 20000);
+                
+                foreach (Data.Database.WeaponMount Mount in RandomEnemy.WeaponMounts)
+                {
+                    var PossibleWeapons = Mount.PossibleWeapons.Select(x => x.Weapon).ToList();
+                    var DBWeapon = PossibleWeapons[Dice.RandomBetweenTwo(0, PossibleWeapons.Count())];
+                    Weapon W = new Weapon(DBWeapon, Mount);
+                    Enemy.Armament.Add(W);
+                }
+
             }
 
             Console Combat = new Console(Program.Width, Program.Height);

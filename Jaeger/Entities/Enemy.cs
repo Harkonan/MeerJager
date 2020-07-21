@@ -38,34 +38,8 @@ namespace MeerJager.Entities
             AccousticDetectionAbility = 1.0f;
             AquisitionBonus = new AquisitionBonus();
             PlayerAquisitionBonus = new AquisitionBonus();
-
             Depth = Depths.GetDepths[0];
-
-            Weapon ForeBattery = new Weapon()
-            {
-                Damage = new Range(20, 50),
-                EffectiveDepths = Depths.GetDepths[0..2].ToList(),
-                HitPercent = 90,
-                Range = new Range(500, 19850),
-                ReloadRounds = 4,
-                Type = WeaponType.Main_Battery,
-                UIName = "QF 4-inch Mark XVI fore-mounted Battery"
-            };
-
-            Weapon DepthCharge = new Weapon()
-            {
-                Damage = new Range(80, 110),
-                EffectiveDepths = Depths.GetDepths[1..4].ToList(),
-                HitPercent = 90,
-                Range = new Range(0, 1000),
-                ReloadRounds = 2,
-                Type = WeaponType.Depth_Charge,
-                UIName = "Hedgehog Depth Charge"
-            };
-
-            Armament = new Weapon[2];
-            Armament[0] = DepthCharge;
-            Armament[1] = ForeBattery;
+            Armament = new List<Weapon>();
         }
 
         public void CycleWeapons(Player Target)
@@ -174,7 +148,7 @@ namespace MeerJager.Entities
                 {
                     return string.Format("{0}'s hull is damaged", UIName);
                 }
-                else if (60 < HealthPercent && HealthPercent <= 100)
+                else if (60 < HealthPercent && HealthPercent < 100)
                 {
                     return string.Format("{0}'s hull is slightly damaged", UIName);
                 }
