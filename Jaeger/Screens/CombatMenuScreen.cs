@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System;
+using Console = SadConsole.Console;
 
 namespace MeerJager.Screens
 {
@@ -147,6 +149,8 @@ namespace MeerJager.Screens
 
         public void StartCombat()
         {
+            Global.CurrentScreen = this.Parent;
+            this.IsFocused = true;
             GetPlayerChoice();
         }
 
@@ -331,17 +335,19 @@ namespace MeerJager.Screens
                 }
                 else
                 {
+                    player.DesieredDistance = null;
                     GetPlayerChoice();
                 }
                 
             }
             else if(player.CurrentHealth <= 0)
             {
-                new MessageScreen("You Died", Program.EndGame, null, Color.Crimson, null, Color.Crimson);
+                PhaseController.EndGame();
+                
             }
             else
             {
-                new MessageScreen("Enemy Destroyed", Program.EndGame, null, null, null, null);
+                new MessageScreen("Enemy Destroyed", PhaseController.StartCombat, null, null, null, null);
             }
         }
 
