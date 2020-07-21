@@ -84,8 +84,8 @@ namespace MeerJager.Data.Database
             var LochMount4 = new WeaponMount { Id = 15, ShipId = 3, AlwaysExists = true, MountName = "ASM Rack 2" };
             var LochMount5 = new WeaponMount { Id = 16, ShipId = 3, AlwaysExists = true, MountName = "ASM Rack 3" };
 
-            var MerchantMount1 = new WeaponMount { Id = 18, ShipId = 3, AlwaysExists = false, MountName = "Hidden Mount 1" };
-            var MerchantMount2 = new WeaponMount { Id = 19, ShipId = 3, AlwaysExists = false, MountName = "Hidden Mount 2" };
+            var MerchantMount1 = new WeaponMount { Id = 18, ShipId = 4, AlwaysExists = false, MountName = "Hidden Mount 1" };
+            var MerchantMount2 = new WeaponMount { Id = 19, ShipId = 4, AlwaysExists = false, MountName = "Hidden Mount 2" };
 
             modelBuilder.Entity<WeaponMount>().HasData(
                 HuntMount1

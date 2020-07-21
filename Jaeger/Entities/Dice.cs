@@ -17,7 +17,7 @@ namespace MeerJager.Entities
 
         public static object RandomFromList<T>(List<T> list)
         {
-            return list[R.Next(0, list.Count() - 1)];
+            return list[R.Next(0, list.Count())];
         }
 
         public static int RandomBetweenTwo(int min, int max)

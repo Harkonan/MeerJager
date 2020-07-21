@@ -37,6 +37,37 @@ namespace MeerJager.Screens
                     Action = GetPlayerWeaponChoice
                 };
                 AddOption(Weapons);
+
+                var ContinueToDistance = new MenuOption()
+                {
+                    Display = "Close to torpedo range ",
+                    Key = Microsoft.Xna.Framework.Input.Keys.V,
+                    Id = OptionNumber++,
+                    Forground = Color.Red,
+                    Action = () =>
+                    {
+                        Program.CurrentLog.ClearLog();
+                        ContinueOnCourseTillDistance();
+                    }
+                };
+                AddOption(ContinueToDistance);
+
+                var CaptainsInte = new MenuOption()
+                {
+                    Display = "Check Intelligence Logbook for ship",
+                    Key = Microsoft.Xna.Framework.Input.Keys.N,
+                    Id = OptionNumber++,
+                    Action = () =>
+                    {
+                        Program.CurrentLog.ClearLog();
+                        foreach (var item in enemy.GetCaptainsIntel())
+                        {
+                            Program.CurrentLog.WriteToLog(item);
+                        }
+                        GetPlayerChoice();
+                    }
+                };
+                AddOption(CaptainsInte);
             }
 
             var ContinueOnCourse = new MenuOption()
@@ -55,19 +86,7 @@ namespace MeerJager.Screens
             };
             AddOption(ContinueOnCourse);
 
-            var ContinueToDistance = new MenuOption()
-            {
-                Display = "Close to torpedo range ",
-                Key = Microsoft.Xna.Framework.Input.Keys.V,
-                Id = OptionNumber++,
-                Forground = Color.Red,
-                Action = () =>
-                {
-                    Program.CurrentLog.ClearLog();
-                    ContinueOnCourseTillDistance();
-                }
-            };
-            AddOption(ContinueToDistance);
+            
 
 
 

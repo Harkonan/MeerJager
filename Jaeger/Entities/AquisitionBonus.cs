@@ -17,7 +17,7 @@ namespace MeerJager.Entities
 
         public void AddAquisitionBonus()
         {
-            CurrentAquisitionBonus += NextAquisitionBonus;
+            CurrentAquisitionBonus -= NextAquisitionBonus;
             NextAquisitionBonus /= 2;
         }
     

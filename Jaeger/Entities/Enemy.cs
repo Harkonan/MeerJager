@@ -1,4 +1,5 @@
 ﻿using Jaeger.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace MeerJager.Entities
         public Boolean PlayerCanSee { get; set; }
         public AquisitionBonus PlayerAquisitionBonus { get; set; }
         public int DistanceToPlayer { get; set; } //in meters
-
+        public int DBID { get; set; }
 
 
         public Enemy()
@@ -168,6 +169,50 @@ namespace MeerJager.Entities
 
         }
 
+        public List<string> GetCaptainsIntel()
+        {
+            using (var db = new Data.Database.AppDataContext())
+            {
+                List<String> Intel = new List<string>();
+                var DBShip = db.Ships
+                    .Include(x => x.Health)
+                    .Include(x => x.WeaponMounts).ThenInclude(m => m.PossibleWeapons).ThenInclude(w => w.Weapon).ThenInclude(w => w.Damage)
+                    .Include(x => x.WeaponMounts).ThenInclude(m => m.PossibleWeapons).ThenInclude(w => w.Weapon).ThenInclude(w => w.Range)
+                    .Where(x => x.ShipID == DBID).FirstOrDefault();
+
+                Intel.Add(String.Format("Captains Intel Book: {0}", UIName));
+                Intel.Add("");
+                Intel.Add(String.Format("Aprox resiliance to weapon systems"));
+                foreach (var Weapon in Program.Player.Armament)
+                {
+                    int LowDam = (int)Math.Ceiling((double)DBShip.Health.Min / (double)Weapon.Damage.Max);
+                    int HighDam = (int)Math.Ceiling((double)DBShip.Health.Max / (double)Weapon.Damage.Min);
+                    Intel.Add(String.Format("{0} ({1}-{2}m): ~{3}-{4} to sink", Weapon.UIName, Weapon.Range.Min, Weapon.Range.Max, LowDam, HighDam));
+                }
+                Intel.Add("");
+                Intel.Add(String.Format("Possible Armament:"));
+                foreach (var Mount in DBShip.WeaponMounts)
+                {
+                    Intel.Add(String.Format("{0}", Mount.MountName, Mount.AlwaysExists ? "": " not always on Class"));
+                    foreach (var Weapon in Mount.PossibleWeapons.Select(x => x.Weapon))
+                    {
+                        int LowDam = (int)Math.Ceiling((double)Program.Player.CurrentHealth / (double)Weapon.Damage.Max);
+                        int HighDam = (int)Math.Ceiling((double)Program.Player.CurrentHealth / (double)Weapon.Damage.Min);
+
+                        Intel.Add(String.Format("   - {0}: {1}-{2}m Range. ~{3}-{4} Shots to kill at our current state", Weapon.Name, Weapon.Range.Min, Weapon.Range.Max, LowDam, HighDam));
+                    }
+                }
+
+
+
+
+
+
+
+                return Intel;
+            }
+        }
+
         public void SetDamage(int amount, string WeaponSystem)
         {
             if (amount > 0)
@@ -257,7 +302,7 @@ namespace MeerJager.Entities
             double VisualRoll = Dice.RollPercentage() * AquisitionBonus;
             //Program.CurrentLog.WriteToLog(string.Format("{0} has a {1} detecting chance on vessel using visual and rolled {2}, (with a bonus of {3})", SeekingVessel.UIName, VisualDetectionChance, VisualRoll, AquisitionBonus ));
             //Program.CurrentLog.WriteToLog("");
-            return (VisualDetectionChance < VisualRoll);
+            return (VisualDetectionChance > VisualRoll);
 
         }
 
@@ -265,13 +310,9 @@ namespace MeerJager.Entities
         private double AcousticalDetectionCalculation(Vessel SeekingVessel, Vessel HidingVessel)
         {
             double DistanceMod = (double)DistanceToPlayer / (double)15000;
-
             double DistancePower = Math.Pow(DistanceMod, 0.33);
-
             double DistanceMultiplier = 0.5 / DistancePower;
-
             double Result = HidingVessel.Noise * DistanceMultiplier * SeekingVessel.AccousticDetectionAbility * HidingVessel.Depth.ChanceToHearModifer;
-
             return Result;
         }
         private bool AcousticalDetectionRoll(Vessel SeekingVessel, Vessel HidingVessel, double AquisitionBonus)
@@ -280,7 +321,7 @@ namespace MeerJager.Entities
             double AcousticalRoll = Dice.RollPercentage() * AquisitionBonus;
             //Program.CurrentLog.WriteToLog(string.Format("{0} has a {1} detecting chance on vessel using acoustics and rolled {2}, (with a bonus of {3})", SeekingVessel.UIName, AcousticalDetectionChance, AcousticalRoll, AquisitionBonus));
             //Program.CurrentLog.WriteToLog("");
-            return (AcousticalDetectionChance < AcousticalRoll);
+            return (AcousticalDetectionChance > AcousticalRoll);
         }
 
     }
