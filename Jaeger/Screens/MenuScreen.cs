@@ -12,7 +12,8 @@ namespace MeerJager.Screens
     class MenuScreen : ContainerConsole
     {
         private Console MenuConsole { get; }
-        private List<MenuOption> Menu { get; set; } = new List<MenuOption>();
+        private Console BorderConsole { get;  }
+        internal List<MenuOption> Menu { get; set; } = new List<MenuOption>();
 
 
         public MenuScreen()
@@ -22,8 +23,17 @@ namespace MeerJager.Screens
 
             Menu = new List<MenuOption>();
        
-            MenuConsole = new Console(ConsoleWidth, ConsoleHeight);
+            MenuConsole = new Console(ConsoleWidth-2, ConsoleHeight-2);
             MenuConsole.Parent = this;
+            MenuConsole.Position = new Point(MenuConsole.Position.X + 1, MenuConsole.Position.Y + 1);
+
+            BorderConsole = new Console(ConsoleWidth, ConsoleHeight);
+            BorderConsole.Position = new Point(MenuConsole.Position.X - 2, MenuConsole.Position.Y - 2);
+            BorderConsole.DrawBox(new Rectangle(0, 0, BorderConsole.Width, BorderConsole.Height), new Cell(Color.White, Color.Navy, 0));
+            BorderConsole.Parent = this;
+            BorderConsole.IsVisible = true;
+            MenuConsole.Children.Add(BorderConsole);
+
         }
 
 
@@ -35,25 +45,31 @@ namespace MeerJager.Screens
         public void ClearMenu()
         {
             Menu.Clear();
-            RenderMenuOptions();
+            RenderMenuOptions(); 
         }
 
         public void RenderMenuOptions()
         {
             MenuConsole.Clear();
-            MenuConsole.DrawBox(new Rectangle(0, 0, MenuConsole.Width, MenuConsole.Height), new Cell(Color.White, Color.DarkGray, 0));
+            
 
-            int StartLine = 2;
+            int StartLine = 1;
 
             foreach (var option in Menu)
             {
-                
+
+                string OptionText = string.Format("{0} [{1}]", option.Display, (option.Key.ToString().Length > 1 ? option.Key.ToString().TrimStart('D') : option.Key.ToString()));
+                int Lines = (int)System.Math.Ceiling((double)OptionText.Length / (double)MenuConsole.Width);
+
                 Color background = option.Selected ? option.Forground : option.Background;
                 Color forground = option.Selected ? option.Background : option.Forground;
                 
-                MenuConsole.Print(3, StartLine++, string.Format("{0} [{1}]", option.Display, option.Key.ToString()), forground, background);
-                option.X = 3;
+                MenuConsole.Print(0, StartLine, OptionText , forground, background);
+                option.X = 0;
                 option.Y = StartLine;
+
+                StartLine += Lines+1;
+
             }
         }
 

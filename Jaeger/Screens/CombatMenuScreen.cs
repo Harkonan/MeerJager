@@ -32,7 +32,7 @@ namespace MeerJager.Screens
 
                 var Weapons = new MenuOption()
                 {
-                    Display = "Weapons Systems",
+                    Display = "Fire Weapon Systems...",
                     Key = Microsoft.Xna.Framework.Input.Keys.W,
                     Id = OptionNumber++,
                     Action = GetPlayerWeaponChoice
@@ -41,7 +41,7 @@ namespace MeerJager.Screens
 
                 var ContinueToDistance = new MenuOption()
                 {
-                    Display = "Close to torpedo range ",
+                    Display = "Close to range... ",
                     Key = Microsoft.Xna.Framework.Input.Keys.V,
                     Id = OptionNumber++,
                     Forground = Color.Red,
@@ -170,35 +170,75 @@ namespace MeerJager.Screens
             
             foreach (var Weapon in player.Armament)
             {
-                AddOption(new MenuOption
+                
+                if (enemy.DistanceToPlayer > Weapon.Range.Max && !Menu.Any(x => x.Display.Contains("Close to "+Weapon.Range.Max)))
                 {
-                    Display = String.Format("Close to {0} ({1} Maximum range)", Weapon.Range.Max, Weapon.UIName),
-                    Key = (Microsoft.Xna.Framework.Input.Keys)Utilities.ConvertNumberToChar(OptionNumber),
-                    Id = OptionNumber++,
-                    Forground = Color.Red,
-                    Action = () =>
+                    AddOption(new MenuOption
                     {
-                        Program.CurrentLog.ClearLog();
-                        player.DesieredDistance = Weapon.Range.Max;
-                        EndPlayerChoice();
-                    }
-                });
-                AddOption(new MenuOption
+                        Display = String.Format("Close to {0} ({1}m Maximum range)", Weapon.Range.Max, Weapon.UIName),
+                        Key = (Microsoft.Xna.Framework.Input.Keys)Utilities.ConvertNumberToChar(OptionNumber),
+                        Id = OptionNumber++,
+                        Forground = Color.Red,
+                        Action = () =>
+                        {
+                            Program.CurrentLog.ClearLog();
+                            player.DesieredDistance = Weapon.Range.Max;
+                            EndPlayerChoice();
+                        }
+                    });
+                }
+
+                if (enemy.DistanceToPlayer > Weapon.Range.Min && !Menu.Any(x => x.Display.Contains("Close to " + Weapon.Range.Min)))
                 {
-                    Display = String.Format("Close to {0} ({1} Minimum range)", Weapon.Range.Max, Weapon.UIName),
-                    Key = (Microsoft.Xna.Framework.Input.Keys)Utilities.ConvertNumberToChar(OptionNumber),
-                    Id = OptionNumber++,
-                    Forground = Color.Red,
-                    Action = () =>
+                    AddOption(new MenuOption
                     {
-                        Program.CurrentLog.ClearLog();
-                        player.DesieredDistance = Weapon.Range.Max;
-                        EndPlayerChoice();
-                    }
-                });
+                        Display = String.Format("Close to {0} ({1}m Minimum range)", Weapon.Range.Min, Weapon.UIName),
+                        Key = (Microsoft.Xna.Framework.Input.Keys)Utilities.ConvertNumberToChar(OptionNumber),
+                        Id = OptionNumber++,
+                        Forground = Color.Red,
+                        Action = () =>
+                        {
+                            Program.CurrentLog.ClearLog();
+                            player.DesieredDistance = Weapon.Range.Min;
+                            EndPlayerChoice();
+                        }
+                    });
+                }
+
+                
+                
             }
 
+            int Incriment = enemy.DistanceToPlayer;
+            do
+            {
+                Incriment /= 2;
+                AddOption(new MenuOption
+                {
+                    Display = String.Format("Close to {0})", Incriment),
+                    Key = (Microsoft.Xna.Framework.Input.Keys)Utilities.ConvertNumberToChar(OptionNumber),
+                    Id = OptionNumber++,
+                    Forground = Color.Red,
+                    Action = () =>
+                    {
+                        Program.CurrentLog.ClearLog();
+                        player.DesieredDistance = Incriment;
+                        EndPlayerChoice();
+                    }
+                });
+
+            } while (Incriment > 5000);
+
+            AddOption(new MenuOption()
+            {
+                Display = "Back",
+                Key = Microsoft.Xna.Framework.Input.Keys.B,
+                Id = OptionNumber++,
+                Action = GetPlayerChoice,
+                Selected = true
+            });
             
+            RenderMenuOptions();
         }
 
         public void StartCombat()

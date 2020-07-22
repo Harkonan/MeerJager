@@ -25,9 +25,12 @@ namespace MeerJager
         internal static int Height = 50;
         internal static LogScreen CurrentLog;
         internal static Player Player;
+        
 
         static void Main(string[] args)
         {
+            
+            SadConsole.Themes.Library.Default.ControlsConsoleTheme = new MyTheme();
             SadConsole.Game.Create(Width, Height);
 
             // Hook the start event so we can add consoles to the system.
@@ -47,6 +50,18 @@ namespace MeerJager
         }
 
 
+
         
+    }
+
+    class MyTheme : SadConsole.Themes.ControlsConsoleTheme
+    {
+        public override void Draw(ControlsConsole console, CellSurface hostSurface)
+        {
+            this.FillStyle.Background = Color.Black;
+
+            base.Draw(console, hostSurface);
+
+        }
     }
 }
