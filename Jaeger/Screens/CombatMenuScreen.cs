@@ -18,7 +18,7 @@ namespace MeerJager.Screens
 
         public CombatMenuScreen(Enemy _enemy) : base()
         {
-            enemy = _enemy;   
+            enemy = _enemy;
         }
 
         private void GetPlayerChoice()
@@ -86,7 +86,7 @@ namespace MeerJager.Screens
             };
             AddOption(ContinueOnCourse);
 
-            
+
 
 
 
@@ -125,7 +125,8 @@ namespace MeerJager.Screens
                     Key = Microsoft.Xna.Framework.Input.Keys.R,
                     Id = OptionNumber++,
                     Forground = Color.Red,
-                    Action = () => {
+                    Action = () =>
+                    {
                         Program.CurrentLog.ClearLog();
                         player.RaiseDepth();
                         EndPlayerChoice();
@@ -142,7 +143,8 @@ namespace MeerJager.Screens
                     Key = Microsoft.Xna.Framework.Input.Keys.L,
                     Id = OptionNumber++,
                     Forground = Color.Red,
-                    Action = () => {
+                    Action = () =>
+                    {
                         Program.CurrentLog.ClearLog();
                         player.LowerDepth();
                         EndPlayerChoice();
@@ -162,6 +164,8 @@ namespace MeerJager.Screens
 
         private void ContinueOnCourseTillDistance()
         {
+
+
             player.DesieredDistance = 7500;
             EndPlayerChoice();
         }
@@ -216,7 +220,6 @@ namespace MeerJager.Screens
             ClearMenu();
             Program.CurrentLog.ClearLog();
             int OptionNumber = 1;
-            var menuOptions = new List<MenuOption>();
             Program.CurrentLog.WriteToLog("Weapons Report Captain: ");
             Program.CurrentLog.WriteToLog(String.Format("Current Target is {0} at Range {1}", enemy.UIName, enemy.DistanceToPlayer));
 
@@ -227,8 +230,7 @@ namespace MeerJager.Screens
                 {
                     case WeaponStatus.firing:
                         Program.CurrentLog.WriteToLog(string.Format("{0} is prepairing to fire!", weapon.UIName));
-
-                        var firing = new MenuOption()
+                        AddOption(new MenuOption()
                         {
                             Display = string.Format("Belay {0} firing", weapon.UIName),
                             Key = (Microsoft.Xna.Framework.Input.Keys)Convert.ToChar(OptionNumber.ToString()),
@@ -238,8 +240,7 @@ namespace MeerJager.Screens
                                 weapon.Status = WeaponStatus.loaded;
                                 GetPlayerWeaponChoice();
                             }
-                        };
-                        menuOptions.Add(firing);
+                        });
                         break;
                     case WeaponStatus.reloading:
                         Program.CurrentLog.WriteToLog(string.Format("{0} is loading ({1} turns remaining)", weapon.UIName, weapon.ReloadRoundsLeft));
@@ -304,11 +305,12 @@ namespace MeerJager.Screens
                     Key = Microsoft.Xna.Framework.Input.Keys.E,
                     Id = OptionNumber++,
                     Forground = Color.Red,
-                    Action = () => {
+                    Action = () =>
+                    {
                         Program.CurrentLog.ClearLog();
                         player.ExecuteAttack();
                         EndPlayerChoice();
-                        }
+                    }
                     ,
                     Selected = true
                 });
@@ -342,7 +344,7 @@ namespace MeerJager.Screens
                 enemy.CycleWeapons(player);
             }
             player.ReloadWeapons();
-            
+
             if (player.CurrentHealth > 0 && enemy.CurrentHealth > 0)
             {
                 if (player.DesieredDistance.HasValue && player.DesieredDistance < enemy.DistanceToPlayer && enemy.PlayerCanSee)
@@ -357,12 +359,12 @@ namespace MeerJager.Screens
                     player.DesieredDistance = null;
                     GetPlayerChoice();
                 }
-                
+
             }
-            else if(player.CurrentHealth <= 0)
+            else if (player.CurrentHealth <= 0)
             {
                 PhaseController.EndGame();
-                
+
             }
             else
             {
