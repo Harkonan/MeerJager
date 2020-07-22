@@ -29,13 +29,6 @@ namespace MeerJager.Entities
                     .Include(x => x.WeaponMounts).ThenInclude(m => m.PossibleWeapons).ThenInclude(w => w.Weapon).ThenInclude(w => w.Damage)
                     .Include(x => x.WeaponMounts).ThenInclude(m => m.PossibleWeapons).ThenInclude(w => w.Weapon).ThenInclude(w => w.Range)
                     .ToList();
-                List<string> test = new List<string>();
-                for (int i = 0; i < 40; i++)
-                {
-                    var t = (Data.Database.Ship)(Dice.RandomFromList(Ships));
-                    test.Add(t.Name);
-                    
-                }
 
                 Data.Database.Ship RandomEnemy = (Data.Database.Ship)Dice.RandomFromList(Ships);
 

@@ -345,7 +345,7 @@ namespace MeerJager.Screens
             
             if (player.CurrentHealth > 0 && enemy.CurrentHealth > 0)
             {
-                if (player.DesieredDistance.HasValue && player.DesieredDistance < enemy.DistanceToPlayer)
+                if (player.DesieredDistance.HasValue && player.DesieredDistance < enemy.DistanceToPlayer && enemy.PlayerCanSee)
                 {
                     Program.CurrentLog.ClearLog();
                     player.ChangeSpeed(player.Depth.MaxSpeedAtDepth);
