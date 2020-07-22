@@ -439,6 +439,7 @@ namespace MeerJager.Screens
             }
             else
             {
+                player.SunkShips.Add(enemy);
                 new MessageScreen("Enemy Destroyed", PhaseController.StartCombat, null, null, null, null);
             }
         }

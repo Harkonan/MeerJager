@@ -22,6 +22,7 @@ namespace MeerJager.Entities
         public AquisitionBonus PlayerAquisitionBonus { get; set; }
         public int DistanceToPlayer { get; set; } //in meters
         public int DBID { get; set; }
+        public string Class { get; set; }
 
 
         public Enemy()
@@ -41,6 +42,44 @@ namespace MeerJager.Entities
             PlayerAquisitionBonus = new AquisitionBonus();
             Depth = Depths.GetDepths[0];
             Armament = new List<Weapon>();
+        }
+
+        public static Enemy GetRandomEnemy()
+        {
+            Enemy Enemy = new Enemy();
+
+            using (var db = new Data.Database.AppDataContext())
+            {
+
+                var Ships = db.Ships
+                    .Include(x => x.Class)
+                    .Include(x => x.Health)
+                    .Include(x => x.Profile)
+                    .Include(x => x.WeaponMounts).ThenInclude(m => m.PossibleWeapons).ThenInclude(w => w.Weapon).ThenInclude(w => w.Damage)
+                    .Include(x => x.WeaponMounts).ThenInclude(m => m.PossibleWeapons).ThenInclude(w => w.Weapon).ThenInclude(w => w.Range)
+                    .ToList();
+
+                Data.Database.Ship RandomEnemy = (Data.Database.Ship)Dice.RandomFromList(Ships);
+
+                Enemy.Class = RandomEnemy.Class.ClassName;
+                Enemy.UIName = RandomEnemy.Name + " Class " + RandomEnemy.Class.ClassName;
+                Enemy.MaxHealth = RandomEnemy.Health.WeightedRandom(2);
+                Enemy.CurrentHealth = Enemy.MaxHealth;
+                Enemy.Profile = RandomEnemy.Profile.WeightedRandom(2);
+                Enemy.DistanceToPlayer = Dice.RandomBetweenTwo(10000, 20000);
+                Enemy.DBID = RandomEnemy.ShipID;
+
+                foreach (Data.Database.WeaponMount Mount in RandomEnemy.WeaponMounts)
+                {
+                    var PossibleWeapons = Mount.PossibleWeapons.Select(x => x.Weapon).ToList();
+                    var DBWeapon = PossibleWeapons[Dice.RandomBetweenTwo(0, PossibleWeapons.Count())];
+                    Weapon W = new Weapon(DBWeapon, Mount);
+                    Enemy.Armament.Add(W);
+                }
+
+            }
+
+            return Enemy;
         }
 
         public void CycleWeapons(Player Target)

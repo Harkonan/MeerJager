@@ -16,6 +16,7 @@ namespace MeerJager.Entities
         public int PoliticalCapital { get; set; }
         public List<ActiveTorpedos> ActiveTorpedos { get; set; }
         public int? DesieredDistance { get; set; }
+        public List<Enemy> SunkShips { get; set; } = new List<Enemy>();
 
 
         public static Player GetPlayer
