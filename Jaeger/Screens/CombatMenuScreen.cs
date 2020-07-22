@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System;
 using Console = SadConsole.Console;
+using MeerJager.Controllers;
 
 namespace MeerJager.Screens
 {
@@ -164,10 +165,40 @@ namespace MeerJager.Screens
 
         private void ContinueOnCourseTillDistance()
         {
+            ClearMenu();
+            int OptionNumber = 1;
+            
+            foreach (var Weapon in player.Armament)
+            {
+                AddOption(new MenuOption
+                {
+                    Display = String.Format("Close to {0} ({1} Maximum range)", Weapon.Range.Max, Weapon.UIName),
+                    Key = (Microsoft.Xna.Framework.Input.Keys)Utilities.ConvertNumberToChar(OptionNumber),
+                    Id = OptionNumber++,
+                    Forground = Color.Red,
+                    Action = () =>
+                    {
+                        Program.CurrentLog.ClearLog();
+                        player.DesieredDistance = Weapon.Range.Max;
+                        EndPlayerChoice();
+                    }
+                });
+                AddOption(new MenuOption
+                {
+                    Display = String.Format("Close to {0} ({1} Minimum range)", Weapon.Range.Max, Weapon.UIName),
+                    Key = (Microsoft.Xna.Framework.Input.Keys)Utilities.ConvertNumberToChar(OptionNumber),
+                    Id = OptionNumber++,
+                    Forground = Color.Red,
+                    Action = () =>
+                    {
+                        Program.CurrentLog.ClearLog();
+                        player.DesieredDistance = Weapon.Range.Max;
+                        EndPlayerChoice();
+                    }
+                });
+            }
 
-
-            player.DesieredDistance = 7500;
-            EndPlayerChoice();
+            
         }
 
         public void StartCombat()
