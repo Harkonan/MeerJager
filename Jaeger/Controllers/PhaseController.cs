@@ -30,12 +30,12 @@ namespace MeerJager.Entities
             //Menu.Parent = Combat;
 
             //new MessageScreen("Captain, acoustics has picked up something. Might be nothing though.", Menu.StartCombat, null, null, null, null);
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 5; i++)
             {
                 Program.Player.SunkShips.Add(Enemy.GetRandomEnemy());
             }
 
-            ScoreScreen();
+            EndGame();
         }
 
         public static void EndGame()

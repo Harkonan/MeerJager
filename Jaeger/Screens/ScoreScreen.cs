@@ -14,8 +14,7 @@ namespace MeerJager.Screens
         public Console ScoreConsole { get; }
         private List<ScoreLine> ClassScorePosition { get; set; } = new List<ScoreLine>();
         private readonly Timer ScoreTimer;
-        private readonly Timer TypingTimer;
-        private readonly Timer PointsTimer;
+        private Timer TypingTimer;
         private int progress = 0;
         private int ScoreBoxWidth = Program.Width / 3;
 
@@ -29,28 +28,21 @@ namespace MeerJager.Screens
 
             DrawScoreGrid();
 
-            TypingTimer = new Timer(TimeSpan.FromSeconds(0.05));
-            TypingTimer.Repeat = true;
-            ScoreConsole.Components.Add(TypingTimer);
-
-            PointsTimer = new Timer(TimeSpan.FromSeconds(0.1));
-            PointsTimer.Repeat = true;
-            ScoreConsole.Components.Add(PointsTimer);
+            
 
 
+            //ScoreTimer = new Timer(TimeSpan.FromSeconds(10.0));
+            //ScoreTimer.Repeat = true;
 
-            ScoreTimer = new Timer(TimeSpan.FromSeconds(10.0));
-            ScoreTimer.Repeat = true;
-
-            ScoreTimer.TimerElapsed += (timer, e) =>
-            {
-                if (progress < Program.Player.SunkShips.Count())
-                {
-                    AddScore(Program.Player.SunkShips[progress]);
-                }
-                progress++;
-            };
-            ScoreConsole.Components.Add(ScoreTimer);
+            //ScoreTimer.TimerElapsed += (timer, e) =>
+            //{
+            //    if (progress < Program.Player.SunkShips.Count())
+            //    {
+            //        AddScore(Program.Player.SunkShips[progress]);
+            //    }
+            //    progress++;
+            //};
+            //ScoreConsole.Components.Add(ScoreTimer);
 
 
 
@@ -59,8 +51,6 @@ namespace MeerJager.Screens
 
         public void DrawScoreGrid()
         {
-
-
             using (var db = new Data.Database.AppDataContext())
             {
                 int YPos = 5;
@@ -80,8 +70,6 @@ namespace MeerJager.Screens
 
                     ClassScorePosition.Add(new ScoreLine { Class = Class, Position = new Point(ScoreLineStart + ScoreBoxWidth, YPos) });
                     YPos++;
-
-
                 }
             }
         }
@@ -94,10 +82,7 @@ namespace MeerJager.Screens
             var OldScore = ScoreLine.Score;
             ScoreLine.Score += 100;
 
-            //ScoreConsole.Print(ScoreLine.Position.X - ScoreLine.Score.ToString().Length, ScoreLine.Position.Y, ScoreLine.Score.ToString());
-            //coreConsole.Print(ScoreLine.Position.X + 1, ScoreLine.Position.Y, "+" + Ship.UIName, Color.Green);
-            IncreaseScore(ScoreLine.Position, OldScore, ScoreLine.Score);
-            TypeLine(new Point(ScoreLine.Position.X + 1, ScoreLine.Position.Y), "+" + Ship.UIName);
+            IncreaseScore(ScoreLine.Position, OldScore, ScoreLine.Score, "+ " + Ship.UIName);
         }
 
         public void ClearPostScore()
@@ -108,44 +93,56 @@ namespace MeerJager.Screens
             }
         }
 
+        private Boolean Finished = false;
         public void ScoreProcessing()
         {
+            
+            TypingTimer = new Timer(TimeSpan.FromSeconds(0.01));
+            TypingTimer.Repeat = true;
+            ScoreConsole.Components.Add(TypingTimer);
+
             if (progress < Program.Player.SunkShips.Count())
             {
                 AddScore(Program.Player.SunkShips[progress]);
+                progress++;
             }
-            progress++;
-        }
-
-        public void TypeLine(Point StartPosition, string Line)
-        {
-            int letter = 0;
-            
-
-            TypingTimer.TimerElapsed += (timer, e) =>
+            else if (!Finished)
             {
-                if (letter < Line.Length)
-                {
-                    ScoreConsole.Print(StartPosition.X + letter, StartPosition.Y, Line[letter].ToString(), Color.Green);
-                    letter++;
-                }
-                
-                
-            };
-            
+                Finished = true;
+                ClearPostScore();
+                var Total = new Point(ClassScorePosition.Last().Position.X, ClassScorePosition.Last().Position.Y+1);
+                IncreaseScore(Total, 0, Program.Player.SunkShips.Count() * 100, "Total");
+            }
         }
 
-        public void IncreaseScore(Point StartPosition, int OldScore, int NewScore)
+        public void IncreaseScore(Point StartPosition, int OldScore, int NewScore, string Line)
         {
+            
             int CurrentScore = OldScore;
+            int Letter = 0;
 
             TypingTimer.TimerElapsed += (timer, e) =>
             {
-                if (CurrentScore < NewScore)
+                var LetterTest = (Letter < Line.Length);
+                var Scoretest = (CurrentScore < NewScore);
+                if (LetterTest)
+                {
+                    ScoreConsole.Print(StartPosition.X + 1 + Letter, StartPosition.Y, Line[Letter].ToString(), Color.Green);
+                    Letter++;
+                }
+
+                if (Scoretest)
                 {
                     var Score = CurrentScore++;
                     ScoreConsole.Print(StartPosition.X - CurrentScore.ToString().Length , StartPosition.Y, CurrentScore.ToString(), Color.White);
                 }
+
+                if (!Scoretest && !LetterTest)
+                {
+                    ScoreConsole.Components.Remove(TypingTimer);
+                    ScoreProcessing();
+                }
+
             };
         }
 
